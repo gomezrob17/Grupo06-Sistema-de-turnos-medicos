@@ -1,0 +1,116 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #F5F7F8;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.login-section {
+  flex: 1;
+  background: #F8F8F8;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title{
+color: #297B8E;
+font-weight: 500;
+}
+
+.image-section {
+  flex: 1;
+  background: url("/images/login/login-medicos.jpg") center center/cover no-repeat;
+  position: relative;
+}
+
+.overlay {
+  position: absolute;
+  bottom: unset;
+  top: 45%;
+  left: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  color: white;
+}
+
+.overlay p {
+  font-weight: 600;     
+  font-size: 18px;
+  color: white;
+}
+
+.logo {
+  width: 220px;
+  margin-bottom: 0px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  max-width: 300px;
+}
+
+input[type="email"],
+input[type="password"] {
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #cfd8dc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.password-wrapper {
+  width: 100%;
+  display: flex;
+}
+
+.password-wrapper input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+.btn-primary {
+  background-color: #297b8e; /* color del logo: azul verdoso */
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 24px;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: #297b8e;
+  border: 2px solid #297b8e;
+  padding: 10px;
+  border-radius: 24px;
+  font-size: 16px;
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+.forgot {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 14px;
+  color: #455a64;
+  text-decoration: none;
+}
+
+.forgot:hover {
+  text-decoration: underline;
+}

@@ -1,0 +1,307 @@
+body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  background-color: #f7fafa;
+  color: #2c3e50;
+}
+
+.top-bar {
+  background-color: #00838f;
+  color: white;
+  padding: 8px;
+  text-align: center;
+  font-size: 14px;
+}
+
+.main-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background-color: white;
+  border-bottom: 2px solid #eee;
+}
+
+.logo img {
+  height: 40px;
+}
+
+.btn-outline {
+  background: none;
+  border: 2px solid #00838f;
+  color: #00838f;
+  padding: 6px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-user {
+  background-color: #00838f;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: white;
+  right: 24px;
+  top: 65px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  list-style: none;
+  padding: 0;
+  border-radius: 6px;
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dropdown-menu li {
+  border-bottom: 1px solid #eee;
+}
+
+.dropdown-menu a, .dropdown-logout {
+  display: block;
+  padding: 10px 16px;
+  text-decoration: none;
+  color: #333;
+  background: white;
+  width: 100%;
+  text-align: left;
+}
+
+.perfil-container {
+  display: flex;
+  margin: 20px;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: white;
+  border-right: 1px solid #ddd;
+  padding: 16px;
+}
+
+.user-info {
+  margin-bottom: 20px;
+}
+
+.user-avatar {
+  font-size: 40px;
+  color: #00838f;
+  margin-bottom: 10px;
+}
+
+.nav-link {
+  display: block;
+  padding: 10px;
+  color: #00838f;
+  text-decoration: none;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  background-color: #e0f7fa;
+}
+
+.perfil-content {
+  flex-grow: 1;
+  padding: 20px;
+}
+
+.card {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  margin-top: 0;
+  color: #006064;
+  cursor: pointer;
+}
+
+.collapsible .content {
+  display: none;
+}
+
+.collapsible.open .content {
+  display: block;
+}
+
+.turnos-section h1 {
+  margin-top: 0;
+  color: #00838f;
+  font-size: 24px;
+  margin-bottom: 16px;
+}
+
+.acciones-turnos {
+  margin-bottom: 20px;
+}
+
+.btn-nuevo-turno {
+  background-color: #00838f;
+  color: white;
+  padding: 10px 18px;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: bold;
+  display: inline-block;
+  transition: background-color 0.3s ease;
+}
+
+.btn-nuevo-turno:hover {
+  background-color: #006064;
+}
+
+.tabla-turnos {
+  overflow-x: auto;
+}
+
+.tabla-turnos table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tabla-turnos th, .tabla-turnos td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.tabla-turnos th {
+  background-color: #e0f7fa;
+  color: #006064;
+  font-weight: bold;
+}
+
+.tabla-turnos tbody tr:hover {
+  background-color: #f1fdfd;
+}
+
+.btn-small {
+  background-color: #e57373;
+  color: white;
+  padding: 6px 12px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-small:hover {
+  background-color: #c62828;
+}
+
+.turno-form {
+  max-width: 600px;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.turno-form .form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.turno-form .form-group label {
+  font-weight: bold;
+}
+
+.turno-form input,
+.turno-form select {
+  padding: 0.5rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.turno-form .form-actions {
+  margin-top: 1rem;
+}
+
+.main-content {
+  max-width: 900px;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* Título principal */
+.main-content h2 {
+  color: #007e87;
+  font-size: 1.8rem;
+  font-weight: 700;
+  border-bottom: 2px solid #cce8eb;
+  padding-bottom: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Modernizar campos */
+.turno-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.turno-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.turno-form input,
+.turno-form select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  transition: border-color 0.3s ease;
+}
+
+.turno-form input:focus,
+.turno-form select:focus {
+  border-color: #00a0b0;
+  background-color: #fff;
+  outline: none;
+}
+
+/* Estilo para el botón de envío */
+.form-actions {
+  text-align: right;
+  margin-top: 2rem;
+}
+
+.btn-primary {
+  background-color: #0097a7;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #007e87;
+}
