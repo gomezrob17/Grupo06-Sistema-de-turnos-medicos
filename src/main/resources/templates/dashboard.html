@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard de Empleado | Vida Nova</title>
+  <link rel="stylesheet" th:href="@{/css/empleado.css}" /> <!-- integración real con la vista en la pxm version -->
+</head>
+<body>
+  <h1>Bienvenido, Empleado</h1>
+  <p>Has iniciado sesión con rol <strong>EMPLEADO</strong>.</p>
+  <p><a th:href="@{/logout}">Cerrar sesión</a></p>
+</body>
+</html>

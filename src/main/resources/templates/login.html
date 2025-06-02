@@ -2,42 +2,53 @@
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Hospital Vida Nova - Iniciar Sesión</title>
-	<link rel="stylesheet" th:href="@{/css/login.css}" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hospital Vida Nova - Iniciar Sesión</title>
+  <link rel="stylesheet" th:href="@{/css/login.css}" />
 </head>
 
 <body>
-	<div class="container">
-		<div class="login-section">
-			<img th:src="@{/images/login/logo_oficial_vida_nova.png}" alt="Logo Hospital Vida Nova" class="logo" />
-			<h2 class="title">Iniciar Sesión</h2>
+  <div class="container">
+    <div class="login-section">
+      <img th:src="@{/images/login/logo_oficial_vida_nova.png}" alt="Logo Hospital Vida Nova" class="logo" />
+      <h2 class="title">Iniciar Sesión</h2>
 
-			<form th:action="@{/login}" method="post">
-				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+      <!-- Si la URL trae ?error, muestro mensaje de credenciales inválidas -->
+      <div th:if="${param.error}" class="alert alert-danger" style="color: #a94442; margin-bottom: 1rem;">
+        Credenciales inválidas. Por favor, verificá tu email y contraseña.
+      </div>
+      <!-- Si la URL trae ?logout, muestro mensaje de cierre de sesión exitoso -->
+      <div th:if="${param.logout}" class="alert alert-success" style="color: #3c763d; margin-bottom: 1rem;">
+        Has cerrado sesión correctamente.
+      </div>
 
-				<input type="email" name="username" placeholder="E-mail" required />
+      <form th:action="@{/login}" method="post">
+        <!-- Token CSRF -->
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
 
-				<div class="password-wrapper">
-					<input type="password" name="password" placeholder="Contraseña" required />
-				</div>
+        <!-- Campo email (antes estaba name="username"; ahora name="email") -->
+        <input type="email" name="email" placeholder="E-mail" required autofocus />
 
-				<button type="submit" class="btn-primary">Continuar</button>
-				<button type="button" class="btn-secondary" th:onclick="|window.location='@{/register}'|">
-					Registrarse
-				</button>
-				<a href="#" class="forgot">¿Olvidaste tu contraseña?</a>
-			</form>
-		</div>
+        <div class="password-wrapper">
+          <input type="password" name="password" placeholder="Contraseña" required />
+        </div>
 
-		<div class="image-section">
-			<div class="overlay">
-				<h1>Bienvenido a Vida Nova Online</h1>
-				<p>Agendá tus turnos, accedé a tus resultados y gestioná tu grupo familiar desde nuestro portal</p>
-			</div>
-		</div>
-	</div>
+        <button type="submit" class="btn-primary">Continuar</button>
+        <button type="button" class="btn-secondary" th:onclick="|window.location='@{/register}'|">
+          Registrarse
+        </button>
+        <a href="#" class="forgot">¿Olvidaste tu contraseña?</a>
+      </form>
+    </div>
+
+    <div class="image-section">
+      <div class="overlay">
+        <h1>Bienvenido a Vida Nova Online</h1>
+        <p>Agendá tus turnos, accedé a tus resultados y gestioná tu grupo familiar desde nuestro portal</p>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
