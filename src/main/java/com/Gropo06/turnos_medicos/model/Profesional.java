@@ -2,38 +2,34 @@ package com.Gropo06.turnos_medicos.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "profesionales")
 public class Profesional extends Usuario {
-	
-    @Column(name = "matricula", length = 50, nullable = false, unique = true)
-    private String matricula;
 
-    // Una especialidad por profesional
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_especialidad", nullable = false)
-    private Especialidad especialidad;
+	@Column(name = "matricula", length = 50, nullable = false, unique = true)
+	private String matricula;
 
-    // Un profesional ofrece varias disponibilidades
-    @OneToMany(mappedBy = "profesional", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Disponibilidad> disponibilidades;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "id_especialidad", nullable = false)
+	private Especialidad especialidad;
 
-    // Un profesional puede tener varias sucursales, y viceversa
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "profesional_sucursal",
-        joinColumns = @JoinColumn(name = "id_profesional"),
-        inverseJoinColumns = @JoinColumn(name = "id_sucursal")
-    )
-    private Set<Sucursal> sucursales;
+	@OneToMany(mappedBy = "profesional", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("fecha ASC, horaInicio ASC")
+	private List<Disponibilidad> disponibilidades = new ArrayList<>();
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "profesional_sucursal", joinColumns = @JoinColumn(name = "id_profesional"), inverseJoinColumns = @JoinColumn(name = "id_sucursal"))
+	private Set<Sucursal> sucursales;
 
 	public Profesional() {
 	}
 
-	public Profesional(String dni, String nombre, String apellido, LocalDate fechaNacimiento, String genero, Contacto contacto, Rol rol, String matricula, Especialidad especialidad) {
+	public Profesional(String dni, String nombre, String apellido, LocalDate fechaNacimiento, String genero,
+			Contacto contacto, Rol rol, String matricula, Especialidad especialidad) {
 		super(dni, nombre, apellido, fechaNacimiento, genero, contacto, rol);
 		this.matricula = matricula;
 		this.especialidad = especialidad;
@@ -71,5 +67,4 @@ public class Profesional extends Usuario {
 		this.sucursales = sucursales;
 	}
 
-	
 }

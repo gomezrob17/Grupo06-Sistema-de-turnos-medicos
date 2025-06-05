@@ -1,8 +1,8 @@
 
-/*INSERT INTO roles(nombre) VALUES ('EMPLEADO'), ('PACIENTE');*/
+/*INSERT INTO roles(nombre) VALUES ('EMPLEADO'), ('PACIENTE'), ('PROFESIONAL');
 
 -- 1) Creo el contacto del EMPLEADO "Admin"
-/*INSERT INTO contactos (email, telefono)
+INSERT INTO contactos (email, telefono)
 VALUES ('admin@vidanova.com', '111-222-3333');
 
 -- 2) Creo el usuario con ese mismo contacto y asigno rol=1 (EMPLEADO)

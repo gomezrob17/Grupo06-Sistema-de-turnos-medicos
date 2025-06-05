@@ -16,10 +16,11 @@ public class Paciente extends Usuario {
 	@OneToMany(mappedBy = "paciente", cascade = CascadeType.ALL)
 	private List<Turno> turnos = new ArrayList<>();
 
-	public Paciente() {}
+	public Paciente() {
+	}
 
-	// Constructor con atributos de la clase padre
-	public Paciente(String dni, String nombre, String apellido, LocalDate fechaNacimiento, String genero, Contacto contacto, Rol rol, String obraSocial) {
+	public Paciente(String dni, String nombre, String apellido, LocalDate fechaNacimiento, String genero,
+			Contacto contacto, Rol rol, String obraSocial) {
 		super(dni, nombre, apellido, fechaNacimiento, genero, contacto, rol);
 		this.obraSocial = obraSocial;
 	}

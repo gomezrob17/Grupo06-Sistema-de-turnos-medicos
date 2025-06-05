@@ -7,60 +7,70 @@ import java.util.Set;
 @Table(name = "especialidades")
 public class Especialidad {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_especialidad")
-    private Long idEspecialidad;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id_especialidad")
+	private Long idEspecialidad;
 
-    @Column(name = "nombre", length = 100, nullable = false, unique = true)
-    private String nombre;
+	@Column(name = "nombre", length = 100, nullable = false, unique = true)
+	private String nombre;
 
-    // Duración estándar del turno en minutos
-    @Column(name = "duracion", nullable = false)
-    private Integer duracion;
+	// Duración estándar del turno en minutos
+	@Column(name = "duracion", nullable = false)
+	private Integer duracion;
 
-    // N−M con Sucursal
-    @ManyToMany(mappedBy = "especialidades", fetch = FetchType.LAZY)
-    private Set<Sucursal> sucursales;
+	@ManyToMany(mappedBy = "especialidades", fetch = FetchType.LAZY)
+	private Set<Sucursal> sucursales;
 
-    // N−M con Profesional
-    @OneToMany(mappedBy = "especialidad", fetch = FetchType.LAZY)
-    private Set<Profesional> profesionales;
+	@OneToMany(mappedBy = "especialidad", fetch = FetchType.LAZY)
+	private Set<Profesional> profesionales;
 
-    public Especialidad() {}
+	public Especialidad() {
+	}
 
-    public Long getIdEspecialidad() {
-        return idEspecialidad;
-    }
-    public void setIdEspecialidad(Long idEspecialidad) {
-        this.idEspecialidad = idEspecialidad;
-    }
+	public Especialidad(String nombre, Integer duracion) {
+		super();
+		this.nombre = nombre;
+		this.duracion = duracion;
+	}
 
-    public String getNombre() {
-        return nombre;
-    }
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+	public Long getIdEspecialidad() {
+		return idEspecialidad;
+	}
 
-    public Integer getDuracion() {
-        return duracion;
-    }
-    public void setDuracion(Integer duracion) {
-        this.duracion = duracion;
-    }
+	public void setIdEspecialidad(Long idEspecialidad) {
+		this.idEspecialidad = idEspecialidad;
+	}
 
-    public Set<Sucursal> getSucursales() {
-        return sucursales;
-    }
-    public void setSucursales(Set<Sucursal> sucursales) {
-        this.sucursales = sucursales;
-    }
+	public String getNombre() {
+		return nombre;
+	}
 
-    public Set<Profesional> getProfesionales() {
-        return profesionales;
-    }
-    public void setProfesionales(Set<Profesional> profesionales) {
-        this.profesionales = profesionales;
-    }
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public Integer getDuracion() {
+		return duracion;
+	}
+
+	public void setDuracion(Integer duracion) {
+		this.duracion = duracion;
+	}
+
+	public Set<Sucursal> getSucursales() {
+		return sucursales;
+	}
+
+	public void setSucursales(Set<Sucursal> sucursales) {
+		this.sucursales = sucursales;
+	}
+
+	public Set<Profesional> getProfesionales() {
+		return profesionales;
+	}
+
+	public void setProfesionales(Set<Profesional> profesionales) {
+		this.profesionales = profesionales;
+	}
 }

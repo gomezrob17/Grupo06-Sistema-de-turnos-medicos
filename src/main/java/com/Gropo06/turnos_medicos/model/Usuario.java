@@ -39,9 +39,11 @@ public class Usuario {
 	@Column(name = "password", nullable = false)
 	private String password;
 
-	public Usuario() {}
+	public Usuario() {
+	}
 
-	public Usuario(String dni, String nombre, String apellido, LocalDate fechaNacimiento, String genero, Contacto contacto, Rol rol) {
+	public Usuario(String dni, String nombre, String apellido, LocalDate fechaNacimiento, String genero,
+			Contacto contacto, Rol rol) {
 		this.dni = dni;
 		this.nombre = nombre;
 		this.apellido = apellido;

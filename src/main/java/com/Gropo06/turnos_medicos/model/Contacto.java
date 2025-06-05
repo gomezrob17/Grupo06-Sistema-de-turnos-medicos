@@ -20,7 +20,8 @@ public class Contacto {
 	@OneToOne(mappedBy = "contacto")
 	private Usuario usuario;
 
-	public Contacto() {}
+	public Contacto() {
+	}
 
 	public Contacto(String email, String telefono) {
 		this.email = email;

@@ -30,7 +30,7 @@ public class Turno {
 	public Turno() {
 	}
 
-	public Turno(LocalTime hora,Paciente paciente, Profesional profesional,EstadoTurno estado) {
+	public Turno(LocalTime hora, Paciente paciente, Profesional profesional, EstadoTurno estado) {
 		this.hora = hora;
 		this.paciente = paciente;
 		this.profesional = profesional;

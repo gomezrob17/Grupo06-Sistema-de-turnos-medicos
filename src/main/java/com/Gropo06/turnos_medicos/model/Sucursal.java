@@ -2,15 +2,13 @@ package com.Gropo06.turnos_medicos.model;
 
 import jakarta.persistence.*;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "sucursales")
 public class Sucursal {
-
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_sucursal")
     private Long idSucursal;
 
@@ -20,7 +18,6 @@ public class Sucursal {
     @Column(name = "direccion", length = 200)
     private String direccion;
 
-    // N−M con Especialidad
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "sucursal_especialidad",
@@ -29,13 +26,21 @@ public class Sucursal {
     )
     private Set<Especialidad> especialidades;
 
-    // N−M con Profesional (vía la tabla "profesional_sucursal")
     @ManyToMany(mappedBy = "sucursales", fetch = FetchType.LAZY)
     private Set<Profesional> profesionales;
 
-    public Sucursal() {}
+    @OneToMany(mappedBy = "sucursal", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Disponibilidad> disponibilidades;
 
-    public Long getIdSucursal() {
+    public Sucursal() {}
+    
+    public Sucursal(String nombre, String direccion) {
+		super();
+		this.nombre = nombre;
+		this.direccion = direccion;
+	}
+
+	public Long getIdSucursal() {
         return idSucursal;
     }
     public void setIdSucursal(Long idSucursal) {
@@ -70,4 +75,14 @@ public class Sucursal {
         this.profesionales = profesionales;
     }
 
+	public List<Disponibilidad> getDisponibilidades() {
+		return disponibilidades;
+	}
+
+	public void setDisponibilidades(List<Disponibilidad> disponibilidades) {
+		this.disponibilidades = disponibilidades;
+	}
+
+    
+    
 }

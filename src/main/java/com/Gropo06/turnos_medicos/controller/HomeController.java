@@ -12,32 +12,27 @@ import java.security.Principal;
 @Controller
 public class HomeController {
 
-    private final UsuarioRepository usuarioRepo;
+	private final UsuarioRepository usuarioRepo;
 
-    public HomeController(UsuarioRepository usuarioRepo) {
-        this.usuarioRepo = usuarioRepo;
-    }
+	public HomeController(UsuarioRepository usuarioRepo) {
+		this.usuarioRepo = usuarioRepo;
+	}
 
-    @GetMapping({"/", "/home"})
-    public String home(Model model, Principal principal) {
-        // recupero el email 
-        String email = principal.getName();
+	@GetMapping({ "/", "/home" })
+	public String home(Model model, Principal principal) {
+		// recupero el email
+		String email = principal.getName();
 
-        //busco la Persona por email
-        Usuario us = usuarioRepo
-            .findByContactoEmail(email)
-            .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+		// busco la Usuario por email
+		Usuario us = usuarioRepo.findByContactoEmail(email)
+				.orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        //armo el nombre completo
-        String nombreMostrar = us.getNombre() 
-                             + " " 
-                             + us.getApellido();
+		// armo el nombre completo
+		String nombreMostrar = us.getNombre() + " " + us.getApellido();
 
-        //lo asigno en el modelo
-        model.addAttribute("displayName", nombreMostrar);
+		// lo asigno en el model
+		model.addAttribute("displayName", nombreMostrar);
 
-        return "home";
-    }
+		return "home";
+	}
 }
-
-

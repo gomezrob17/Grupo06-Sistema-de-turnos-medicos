@@ -22,7 +22,7 @@ public class Rol {
 
 	public Rol() {}
 
-	/** El atributo Nombre del rol puede ser "EMPLEADO", "PACIENTE", etc */
+	/** El atributo Nombre del rol puede ser "EMPLEADO", "PACIENTE", "PROFESIONAL" */
 	public Rol(String nombre) {
 		this.nombre = nombre;
 	}

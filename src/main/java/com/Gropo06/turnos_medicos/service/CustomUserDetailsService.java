@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
-/*Carga el usuario Paciente o Empleado desde la BD usando el email y le asigna ROLE_<NOMBRE_DEL_ROL>*/
+/*Carga el usuario Paciente, Empleado, Profesional desde la BD usando el email y le asigna ROLE_<NOMBRE_DEL_ROL>*/
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
