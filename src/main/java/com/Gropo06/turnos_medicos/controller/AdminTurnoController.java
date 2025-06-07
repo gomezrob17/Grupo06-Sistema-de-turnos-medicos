@@ -31,13 +31,9 @@ public class AdminTurnoController {
     @Autowired
     private EspecialidadRepository especialidadRepo;
 
-    /**
-     * Muestra la vista admin con todos los turnos, pacientes, profesionales y especialidades
-     * URL: GET /admin/turnos
-     */
     @GetMapping("/empleado/turnos")
     public String mostrarVistaAdminTurnos(Model model) {
-        List<Turno> turnos = turnoRepo.findAll();  // Cambié por findAll() simple
+        List<Turno> turnos = turnoRepo.findAll(); 
         System.out.println("Turnos encontrados: " + turnos.size());
 
         List<Paciente> pacientes = pacienteRepo.findAll();
