@@ -1,7 +1,6 @@
 package com.Gropo06.turnos_medicos.model;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -9,86 +8,104 @@ import java.time.LocalTime;
 @Table(name = "disponibilidades")
 public class Disponibilidad {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id_disponibilidad")
-	private Long idDisponibilidad;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_disponibilidad")
+    private Long idDisponibilidad;
 
-	@Column(name = "fecha", nullable = false)
-	private LocalDate fecha;
+    @Column(name = "fecha", nullable = false)
+    private LocalDate fecha;
 
-	@Column(name = "hora_inicio", nullable = false)
-	private LocalTime horaInicio;
+    // Nuevo campo para guardar el día de la semana en español
+    @Column(name = "dia_semana", nullable = false)
+    private String diaSemana;
 
-	@Column(name = "hora_fin", nullable = false)
-	private LocalTime horaFin;
+    @Column(name = "hora_inicio", nullable = false)
+    private LocalTime horaInicio;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "id_profesional", nullable = false)
-	private Profesional profesional;
+    @Column(name = "hora_fin", nullable = false)
+    private LocalTime horaFin;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "id_sucursal", nullable = false)
-	private Sucursal sucursal;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_profesional", nullable = false)
+    private Profesional profesional;
 
-	public Disponibilidad() {
-	}
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "id_sucursal", nullable = false)
+    private Sucursal sucursal;
 
-	public Disponibilidad(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, Profesional profesional,
-			Sucursal sucursal) {
-		super();
-		this.fecha = fecha;
-		this.horaInicio = horaInicio;
-		this.horaFin = horaFin;
-		this.profesional = profesional;
-		this.sucursal = sucursal;
-	}
+    public Disponibilidad() {
+    }
 
-	public Long getIdDisponibilidad() {
-		return idDisponibilidad;
-	}
+    public Disponibilidad(LocalDate fecha, LocalTime horaInicio, LocalTime horaFin, Profesional profesional,
+                         Sucursal sucursal) {
+        this.setFecha(fecha);  // Usamos el setter para que calcule el día automáticamente
+        this.horaInicio = horaInicio;
+        this.horaFin = horaFin;
+        this.profesional = profesional;
+        this.sucursal = sucursal;
+    }
 
-	public void setIdDisponibilidad(Long idDisponibilidad) {
-		this.idDisponibilidad = idDisponibilidad;
-	}
+    public Long getIdDisponibilidad() {
+        return idDisponibilidad;
+    }
 
-	public LocalDate getFecha() {
-		return fecha;
-	}
+    public void setIdDisponibilidad(Long idDisponibilidad) {
+        this.idDisponibilidad = idDisponibilidad;
+    }
 
-	public void setFecha(LocalDate fecha) {
-		this.fecha = fecha;
-	}
+    public LocalDate getFecha() {
+        return fecha;
+    }
 
-	public LocalTime getHoraInicio() {
-		return horaInicio;
-	}
+    // Al asignar la fecha, calcula el día de la semana en español y lo asigna
+    public void setFecha(LocalDate fecha) {
+        this.fecha = fecha;
+        if (fecha != null) {
+            this.diaSemana = fecha.getDayOfWeek()
+                .getDisplayName(java.time.format.TextStyle.FULL, new java.util.Locale("es", "ES"));
+        } else {
+            this.diaSemana = null;
+        }
+    }
 
-	public void setHoraInicio(LocalTime horaInicio) {
-		this.horaInicio = horaInicio;
-	}
+    public String getDiaSemana() {
+        return diaSemana;
+    }
 
-	public LocalTime getHoraFin() {
-		return horaFin;
-	}
+    public void setDiaSemana(String diaSemana) {
+        this.diaSemana = diaSemana;
+    }
 
-	public void setHoraFin(LocalTime horaFin) {
-		this.horaFin = horaFin;
-	}
+    public LocalTime getHoraInicio() {
+        return horaInicio;
+    }
 
-	public Profesional getProfesional() {
-		return profesional;
-	}
+    public void setHoraInicio(LocalTime horaInicio) {
+        this.horaInicio = horaInicio;
+    }
 
-	public void setProfesional(Profesional profesional) {
-		this.profesional = profesional;
-	}
+    public LocalTime getHoraFin() {
+        return horaFin;
+    }
 
-	public Sucursal getSucursal() {
-		return sucursal;
-	}
+    public void setHoraFin(LocalTime horaFin) {
+        this.horaFin = horaFin;
+    }
 
-	public void setSucursal(Sucursal sucursal) {
-		this.sucursal = sucursal;
-	}
+    public Profesional getProfesional() {
+        return profesional;
+    }
+
+    public void setProfesional(Profesional profesional) {
+        this.profesional = profesional;
+    }
+
+    public Sucursal getSucursal() {
+        return sucursal;
+    }
+
+    public void setSucursal(Sucursal sucursal) {
+        this.sucursal = sucursal;
+    }
 }

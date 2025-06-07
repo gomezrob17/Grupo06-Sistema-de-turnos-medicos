@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Solicitar Turno</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    /* Para resaltar el slot seleccionado */
+    .slot-seleccionado {
+      border: 2px solid #0d6efd !important;   /* Borde azul oscuro */
+      background-color: #e7f1ff !important;    /* Fondo azul claro */
+    }
+  </style>
+</head>
+<body>
+<div class="container mt-4">
+  <h2>Solicitar Turno</h2>
+
+  <!-- 1) FORMULARIO DE FILTRO: Especialidad, Sucursal, Fecha Desde/Hasta -->
+  <form th:action="@{/turnos/buscar}" th:object="${filtro}" method="post" id="formTurno">
+    <div class="row g-3">
+
+      <!-- SELECT Especialidad -->
+      <div class="col-md-3">
+        <label class="form-label">Especialidad</label>
+        <select class="form-select"
+                th:field="*{idEspecialidad}"
+                id="selectEspecialidad"
+                required>
+          <option value="">-- Elige especialidad --</option>
+          <option th:each="esp : ${especialidades}"
+                  th:value="${esp.idEspecialidad}"
+                  th:text="${esp.nombre}">
+          </option>
+        </select>
+      </div>
+
+      <!-- SELECT Sucursal -->
+      <div class="col-md-3">
+        <label class="form-label">Sucursal</label>
+        <select class="form-select"
+                th:field="*{idSucursal}"
+                id="selectSucursal"
+                th:disabled="${sucursales == null or #lists.isEmpty(sucursales)}"
+                required>
+          <option value="">-- Elige sucursal --</option>
+          <option th:each="suc : ${sucursales}"
+                  th:value="${suc.idSucursal}"
+                  th:text="${suc.nombre}"
+                  th:selected="${suc.idSucursal == filtro.idSucursal}">
+          </option>
+        </select>
+      </div>
+
+      <!-- Rango de Fechas -->
+      <div class="col-md-2">
+        <label class="form-label">Desde</label>
+        <input type="date"
+               class="form-control"
+               th:field="*{fechaDesde}"
+               required />
+      </div>
+      <div class="col-md-2">
+        <label class="form-label">Hasta</label>
+        <input type="date"
+               class="form-control"
+               th:field="*{fechaHasta}"
+               required />
+      </div>
+
+      <!-- Botón Buscar -->
+      <div class="col-md-2 align-self-end">
+        <button type="submit" class="btn btn-primary w-100" id="btnBuscar">
+          Buscar Horarios
+        </button>
+      </div>
+
+    </div>
+  </form>
+
+  <hr/>
+
+  <!-- 2) RENDER DE HORARIOS DISPONIBLES -->
+  <div th:if="${disponibilidadesPorProfesional != null}">
+    <h4>Horarios Disponibles</h4>
+
+    <div th:each="entry : ${disponibilidadesPorProfesional}">
+      <!-- entry.key = Profesional, entry.value = List<SlotDTO> -->
+      <div class="card mb-3">
+        <!-- CARD HEADER: Nombre del Profesional + Día de atención -->
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            Profesional: 
+            <strong th:text="${entry.key.nombre + ' ' + entry.key.apellido}"></strong>
+          </div>
+          <!-- Obtenemos la fecha del primer slot: entry.value[0].fecha -->
+          <div>
+            <span class="badge bg-secondary">
+              Día de atención: 
+              <span th:text="${#temporals.format(entry.value[0].fecha, 'dd/MM/yyyy')}"></span>
+            </span>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div th:if="${#lists.isEmpty(entry.value)}">
+            <p class="text-muted">
+              No hay franjas libres para este profesional en ese rango de fechas.
+            </p>
+          </div>
+          <div class="row g-2" th:if="${!#lists.isEmpty(entry.value)}">
+            <div class="col-md-3 mb-2"
+                 th:each="slot : ${entry.value}"
+                 style="position: relative;">
+              <!-- Botón que llama a la función onClickSlot(..) y contiene data-* -->
+              <button type="button"
+                      class="btn btn-outline-success w-100 slot-button"
+                      th:attr="data-idp=${slot.idProfesional},
+                               data-idesp=${slot.idEspecialidad},
+                               data-idsuc=${slot.idSucursal},
+                               data-fecha=${slot.fecha},
+                               data-horaini=${slot.horaInicio}"
+                      th:text="|${#temporals.format(slot.fecha, 'dd/MM/yyyy')} ${#temporals.format(slot.horaInicio, 'HH:mm')} - ${#temporals.format(slot.horaFin, 'HH:mm')}|">
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3) BLOQUE "Guardar Turno" (inicialmente oculto) -->
+    <div id="guardadoTurnoSection" class="mt-4" style="display: none;">
+      <div class="card border-primary">
+        <div class="card-header bg-primary text-white">
+          <strong>Turno Seleccionado</strong>
+        </div>
+        <div class="card-body">
+          <p>
+            <strong>Fecha:</strong> 
+            <span id="textoFecha"></span><br/>
+            <strong>Hora Inicio:</strong> 
+            <span id="textoHoraInicio"></span><br/>
+            <strong>Especialidad:</strong> 
+            <span id="textoEspecialidad"></span><br/>
+            <strong>Profesional:</strong> 
+            <span id="textoProfesional"></span><br/>
+            <strong>Sucursal:</strong> 
+            <span id="textoSucursal"></span>
+          </p>
+
+          <!-- Formulario final que envía a /turnos/reservar -->
+          <form th:action="@{/turnos/reservar}" method="post" id="formGuardarTurno">
+            <input type="hidden" name="idProfesional" id="inputIdProfesional" />
+            <input type="hidden" name="idEspecialidad" id="inputIdEspecialidad" />
+            <input type="hidden" name="idSucursal" id="inputIdSucursal" />
+            <input type="hidden" name="fecha" id="inputFecha" />
+            <input type="hidden" name="horaInicio" id="inputHoraInicio" />
+
+            <button type="submit" class="btn btn-success">
+              Guardar Turno
+            </button>
+            <button type="button" class="btn btn-secondary ms-2" id="btnCancelarSeleccion">
+              Cancelar
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ----------------- SCRIPTS ----------------- -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // 1) Listener de AJAX para cargar sucursales
+    const selectEsp = document.getElementById('selectEspecialidad');
+    const selectSuc = document.getElementById('selectSucursal');
+
+    selectEsp.addEventListener('change', () => {
+      const idEsp = selectEsp.value;
+      if (!idEsp) {
+        selectSuc.innerHTML = '<option value="">-- Elige sucursal --</option>';
+        selectSuc.disabled = true;
+        return;
+      }
+
+      fetch(`/api/sucursales-por-especialidad?idEspecialidad=${idEsp}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error al obtener sucursales');
+          }
+          return response.json();
+        })
+        .then(data => {
+          let opciones = '<option value="">-- Elige sucursal --</option>';
+          data.forEach(suc => {
+            opciones += `<option value="${suc.id}">${suc.nombre}</option>`;
+          });
+          selectSuc.innerHTML = opciones;
+          selectSuc.disabled = false;
+        })
+        .catch(err => {
+          console.error('Fetch sucursales falló:', err);
+          selectSuc.innerHTML = '<option value="">Error al cargar sucursales</option>';
+          selectSuc.disabled = true;
+        });
+    });
+
+    // 2) Lógica para “seleccionar un slot” y mostrar bloque de Guardar Turno
+    const sectionGuardar      = document.getElementById('guardadoTurnoSection');
+    const btnCancelar         = document.getElementById('btnCancelarSeleccion');
+    const textoFecha          = document.getElementById('textoFecha');
+    const textoHoraInicio     = document.getElementById('textoHoraInicio');
+    const textoEspecialidad   = document.getElementById('textoEspecialidad');
+    const textoProfesional    = document.getElementById('textoProfesional');
+    const textoSucursal       = document.getElementById('textoSucursal');
+
+    const inputIdProfesional  = document.getElementById('inputIdProfesional');
+    const inputIdEspecialidad = document.getElementById('inputIdEspecialidad');
+    const inputIdSucursal     = document.getElementById('inputIdSucursal');
+    const inputFecha          = document.getElementById('inputFecha');
+    const inputHoraInicio     = document.getElementById('inputHoraInicio');
+
+    // Función auxiliar para formatear fecha tipo "2025-06-05" → "05/06/2025"
+    function formatearFecha(yyyyMMdd) {
+      const partes = yyyyMMdd.split('-');
+      return partes[2] + '/' + partes[1] + '/' + partes[0];
+    }
+
+    // Handler cuando el usuario hace clic en un slot
+    function onClickSlot(evt) {
+      const btn = evt.currentTarget;
+      // Si ya está seleccionado, lo deseleccionamos y ocultamos sección
+      if (btn.classList.contains('slot-seleccionado')) {
+        btn.classList.remove('slot-seleccionado');
+        sectionGuardar.style.display = 'none';
+        return;
+      }
+      // Si no estaba seleccionado, primero desmarcamos cualquier otro
+      document.querySelectorAll('.slot-seleccionado').forEach(el => {
+        el.classList.remove('slot-seleccionado');
+      });
+
+      // Ahora marcamos este
+      btn.classList.add('slot-seleccionado');
+
+      // Obtenemos los data-* del botón
+      const idProf    = btn.getAttribute('data-idp');
+      const idEsp     = btn.getAttribute('data-idesp');
+      const idSuc     = btn.getAttribute('data-idsuc');
+      const fechaRaw   = btn.getAttribute('data-fecha');
+      const horaIniRaw = btn.getAttribute('data-horaini');
+
+      // Formateamos la fecha para mostrarla
+      textoFecha.textContent      = formatearFecha(fechaRaw);
+      textoHoraInicio.textContent = horaIniRaw;
+
+      // Obtenemos el nombre del profesional leyendo el <strong> dentro de .card-header
+      const cardHeader = btn.closest('.card').querySelector('.card-header');
+      textoProfesional.textContent = cardHeader.querySelector('strong').textContent;
+
+      // Para la especialidad, leemos el texto del SELECT de Especialidad
+      textoEspecialidad.textContent = selectEsp.options[selectEsp.selectedIndex].text;
+
+      // Para la sucursal, buscamos la opción cuyo value coincide con data-idsuc
+      const optSuc = selectSuc.querySelector(`option[value="${idSuc}"]`);
+      textoSucursal.textContent = optSuc ? optSuc.textContent : '--';
+
+      // Rellenamos los inputs ocultos del form
+      inputIdProfesional.value  = idProf;
+      inputIdEspecialidad.value = idEsp;
+      inputIdSucursal.value     = idSuc;
+      inputFecha.value          = fechaRaw;
+      inputHoraInicio.value     = horaIniRaw;
+
+      // Mostramos el bloque “Guardar Turno”
+      sectionGuardar.style.display = 'block';
+      sectionGuardar.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Registramos el event listener en todos los botones con clase .slot-button
+    document.querySelectorAll('.slot-button').forEach(btn => {
+      btn.addEventListener('click', onClickSlot);
+    });
+
+    // Botón “Cancelar” para ocultar el bloque y desmarcar seleccionados
+    btnCancelar.addEventListener('click', () => {
+      sectionGuardar.style.display = 'none';
+      document.querySelectorAll('.slot-seleccionado').forEach(el => {
+        el.classList.remove('slot-seleccionado');
+      });
+    });
+  });
+</script>
+</body>
+</html>

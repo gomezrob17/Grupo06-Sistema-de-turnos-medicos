@@ -2,6 +2,7 @@ package com.Gropo06.turnos_medicos.model;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +28,7 @@ public class Sucursal {
     private Set<Especialidad> especialidades;
 
     @ManyToMany(mappedBy = "sucursales", fetch = FetchType.LAZY)
-    private Set<Profesional> profesionales;
+    private Set<Profesional> profesionales = new HashSet<>();
 
     @OneToMany(mappedBy = "sucursal", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Disponibilidad> disponibilidades;

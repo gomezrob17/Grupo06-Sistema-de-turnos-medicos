@@ -26,3 +26,11 @@ VALUES (
   (SELECT id_usuario FROM usuarios WHERE dni = '00000000'),
   TRUE
 );*/
+
+/*
+INSERT INTO turnos_medicos.estados_turnos (id_estado, nombre)
+VALUES
+  (1, 'CONFIRMADO'),
+  (2, 'PENDIENTE'),
+  (3, 'CANCELADO');
+*/

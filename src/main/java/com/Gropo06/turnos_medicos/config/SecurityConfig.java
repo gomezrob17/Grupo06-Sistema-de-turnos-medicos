@@ -15,48 +15,72 @@ import com.Gropo06.turnos_medicos.service.CustomUserDetailsService;
 @EnableWebSecurity
 public class SecurityConfig {
 
-	private final CustomUserDetailsService userDetailsService;
+    private final CustomUserDetailsService userDetailsService;
 
-	public SecurityConfig(CustomUserDetailsService uds) {
-		this.userDetailsService = uds;
-	}
+    public SecurityConfig(CustomUserDetailsService uds) {
+        this.userDetailsService = uds;
+    }
 
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.userDetailsService(userDetailsService)
-				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/css/**", "/images/**", "/login", "/register", "/error")
-								.permitAll().requestMatchers("/empleado/**").hasRole("EMPLEADO") // Solo el Empleado (Admin) va a poder acceder a /empleado/**
-								.requestMatchers("/paciente/**").hasRole("PACIENTE")// Solo el Paciente va a poder acceder a /paciente/**
-								.anyRequest().authenticated())
-				.formLogin(form -> form.loginPage("/login")
-						.loginProcessingUrl("/login")
-						.usernameParameter("email")
-						.successHandler(authenticationSuccessHandler()).permitAll())
-				.logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout"));
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            // Indicar nuestro UserDetailsService
+            .userDetailsService(userDetailsService)
+            .authorizeHttpRequests(auth -> auth
+                // Rutas estáticas y de login/registro
+                .requestMatchers("/css/**", "/images/**", "/login", "/register", "/error")
+                    .permitAll()
+                    .requestMatchers("/api/**").permitAll()  
+                // Solo ROLE_EMPLEADO podrá acceder a /empleado/**
+                .requestMatchers("/empleado/**")
+                    .hasRole("EMPLEADO")
+                // Solo ROLE_PACIENTE podrá acceder a las rutas de Turnos 
+                .requestMatchers("/turnos/**", "/mis-turnos")
+                    .hasRole("PACIENTE")
+                // Si tienes alguna otra URL bajo /paciente/**, también la limitamos a ROLE_PACIENTE
+                .requestMatchers("/paciente/**")
+                    .hasRole("PACIENTE")
+                // El resto de las rutas requiere autenticar
+                .anyRequest()
+                    .authenticated()
+            )
+            // Configuración de formulario de login
+            .formLogin(form -> form
+                .loginPage("/login")
+                .loginProcessingUrl("/login")
+                .usernameParameter("email")
+                .successHandler(authenticationSuccessHandler())
+                .permitAll()
+            )
+            // Configuración de logout
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+            );
 
-		return http.build();
-	}
+        return http.build();
+    }
 
     @Bean
     public AuthenticationSuccessHandler authenticationSuccessHandler() {
         return (request, response, authentication) -> {
-
             boolean isEmpleado = authentication.getAuthorities().stream()
-                               .anyMatch(a -> a.getAuthority().equals("ROLE_EMPLEADO"));
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_EMPLEADO"));
             if (isEmpleado) {
                 response.sendRedirect(request.getContextPath() + "/empleado/dashboard");
                 return;
             }
 
             boolean isPaciente = authentication.getAuthorities().stream()
-                                  .anyMatch(a -> a.getAuthority().equals("ROLE_PACIENTE"));
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_PACIENTE"));
             if (isPaciente) {
+                // He supuesto que la “home” de paciente es /home. 
+                // Ajusta según tu controlador si quieres enviarlo a /paciente/turnos o a otra vista.
                 response.sendRedirect(request.getContextPath() + "/home");
                 return;
             }
 
-            // Si no encontramos ninguno de los anteriores redirigimos a un default generico:
+            // Por defecto, redirige a /home si el usuario no es ni EMPLEADO ni PACIENTE
             response.sendRedirect(request.getContextPath() + "/home");
         };
     }

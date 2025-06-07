@@ -2,6 +2,7 @@ package com.Gropo06.turnos_medicos.model;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.Period;
 
 @Entity
 @Table(name = "usuarios")
@@ -123,5 +124,9 @@ public class Usuario {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	public int getEdad() {
+	    if (fechaNacimiento == null) return 0;
+	    return Period.between(fechaNacimiento, LocalDate.now()).getYears();
 	}
 }
