@@ -1,5 +1,6 @@
 package com.Gropo06.turnos_medicos.controller;
 
+import com.Gropo06.turnos_medicos.exceptions.CustomException;
 import com.Gropo06.turnos_medicos.model.Contacto;
 import com.Gropo06.turnos_medicos.model.Disponibilidad;
 import com.Gropo06.turnos_medicos.model.Especialidad;
@@ -11,7 +12,9 @@ import com.Gropo06.turnos_medicos.repository.EspecialidadRepository;
 import com.Gropo06.turnos_medicos.repository.ProfesionalRepository;
 import com.Gropo06.turnos_medicos.repository.RolRepository;
 import com.Gropo06.turnos_medicos.repository.SucursalRepository;
+import com.Gropo06.turnos_medicos.repository.TurnoRepository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +35,9 @@ public class ProfesionalController {
 	private final RolRepository rolRepo;
 	private final ContactoRepository contactoRepo;
 	private final PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private TurnoRepository turnoRepo;
 
 	public ProfesionalController(ProfesionalRepository profesionalRepo, EspecialidadRepository especialidadRepo,
 			SucursalRepository sucursalRepo, RolRepository rolRepo, ContactoRepository contactoRepo,
@@ -79,7 +85,7 @@ public class ProfesionalController {
 
 		if (esEdicion) {
 			prof = profesionalRepo.findByIdWithDisponibilidades(profForm.getIdUsuario()).orElseThrow(
-					() -> new IllegalArgumentException("Profesional inválido Id: " + profForm.getIdUsuario()));
+					() -> new CustomException("Profesional inválido Id: " + profForm.getIdUsuario()));
 
 			// Actualizamos campos especificos del usuario Profesionl
 			prof.setNombre(profForm.getNombre());
@@ -97,13 +103,13 @@ public class ProfesionalController {
 
 			// Actualizamos Especialidad
 			Especialidad esp = especialidadRepo.findById(idEsp)
-					.orElseThrow(() -> new IllegalArgumentException("Especialidad inválida Id: " + idEsp));
+					.orElseThrow(() -> new CustomException("Especialidad inválida Id: " + idEsp));
 			prof.setEspecialidad(esp);
 
 			// Actualizamos Sucursales
 			Set<Sucursal> sucursalesSet = sucursalesIds.stream()
 					.map(id -> sucursalRepo.findById(id)
-							.orElseThrow(() -> new IllegalArgumentException("Sucursal inválida Id: " + id)))
+							.orElseThrow(() -> new CustomException("Sucursal inválida Id: " + id)))
 					.collect(Collectors.toSet());
 			prof.setSucursales(sucursalesSet);
 
@@ -131,7 +137,7 @@ public class ProfesionalController {
 				for (Disponibilidad dForm : listaDispDelFormulario) {
 
 					Sucursal suc = sucursalRepo.findById(dForm.getSucursal().getIdSucursal())
-							.orElseThrow(() -> new IllegalArgumentException(
+							.orElseThrow(() -> new CustomException(
 									"Sucursal inválida Id: " + dForm.getSucursal().getIdSucursal()));
 					dForm.setSucursal(suc);
 
@@ -154,12 +160,15 @@ public class ProfesionalController {
 
 			// Nuevo Contacto
 			Contacto nuevoContacto = new Contacto(email, telefono);
+			if (contactoRepo.existsByEmail(nuevoContacto.getEmail())) {
+			    throw new CustomException("Email ya existente");
+			}
 			contactoRepo.save(nuevoContacto);
 			prof.setContacto(nuevoContacto);
 
 			// Rol PROFESIONAL
 			Rol rolProfesional = rolRepo.findByNombre("PROFESIONAL")
-					.orElseThrow(() -> new IllegalArgumentException("Rol PROFESIONAL no encontrado"));
+					.orElseThrow(() -> new CustomException("Rol PROFESIONAL no encontrado"));
 			prof.setRol(rolProfesional);
 
 			// Contraseña por defecto (por ejemplo matrícula)
@@ -168,13 +177,13 @@ public class ProfesionalController {
 
 			// Asociar Especialidad
 			Especialidad espNueva = especialidadRepo.findById(idEsp)
-					.orElseThrow(() -> new IllegalArgumentException("Especialidad inválida Id: " + idEsp));
+					.orElseThrow(() -> new CustomException("Especialidad inválida Id: " + idEsp));
 			prof.setEspecialidad(espNueva);
 
 			// Asociar Sucursales
 			Set<Sucursal> sucursalesSet = sucursalesIds.stream()
 					.map(id -> sucursalRepo.findById(id)
-							.orElseThrow(() -> new IllegalArgumentException("Sucursal inválida Id: " + id)))
+							.orElseThrow(() -> new CustomException("Sucursal inválida Id: " + id)))
 					.collect(Collectors.toSet());
 			prof.setSucursales(sucursalesSet);
 
@@ -195,7 +204,7 @@ public class ProfesionalController {
 				// Si todo va ok, asigno cada Disponibilidad
 				for (Disponibilidad dForm : listaDispDelFormulario) {
 					Sucursal suc = sucursalRepo.findById(dForm.getSucursal().getIdSucursal())
-							.orElseThrow(() -> new IllegalArgumentException(
+							.orElseThrow(() -> new CustomException(
 									"Sucursal inválida Id: " + dForm.getSucursal().getIdSucursal()));
 					dForm.setSucursal(suc);
 					dForm.setProfesional(prof);
@@ -245,7 +254,7 @@ public class ProfesionalController {
 	@GetMapping("/edit/{id}")
 	public String editarProfesional(@PathVariable("id") Long id, Model model) {
 		Profesional prof = profesionalRepo.findByIdWithDisponibilidades(id)
-				.orElseThrow(() -> new IllegalArgumentException("Profesional inválido Id: " + id));
+				.orElseThrow(() -> new CustomException("Profesional inválido Id: " + id));
 
 		if (prof.getDisponibilidades() == null) {
 			prof.setDisponibilidades(new ArrayList<>());
@@ -271,6 +280,7 @@ public class ProfesionalController {
 
 	@GetMapping("/delete/{id}")
 	public String eliminarProfesional(@PathVariable("id") Long id) {
+	    if (turnoRepo.existsByProfesional_IdUsuario(id)) throw new CustomException("El profesional posee Turnos asignados.");
 		profesionalRepo.deleteById(id);
 		return "redirect:/empleado/profesionales";
 	}

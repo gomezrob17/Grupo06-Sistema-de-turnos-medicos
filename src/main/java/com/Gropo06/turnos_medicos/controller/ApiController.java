@@ -18,11 +18,6 @@ public class ApiController {
         this.sucursalRepo = sucursalRepo;
     }
 
-    /**
-     * GET /api/sucursales-por-especialidad?idEspecialidad=#
-     * Devuelve JSON con la lista de sucursales que atienden la especialidad indicada.
-     * Cada ítem es un SucursalDTO { id, nombre }.
-     */
     @GetMapping("/api/sucursales-por-especialidad")
     public List<SucursalDTO> getSucursalesPorEspecialidad(
             @RequestParam("idEspecialidad") Long idEspecialidad) {

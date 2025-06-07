@@ -2,6 +2,7 @@ package com.Gropo06.turnos_medicos.controller;
 
 import com.Gropo06.turnos_medicos.dto.FiltroTurnoDTO;
 import com.Gropo06.turnos_medicos.dto.SlotDTO;
+import com.Gropo06.turnos_medicos.exceptions.CustomException;
 import com.Gropo06.turnos_medicos.model.Agenda;
 import com.Gropo06.turnos_medicos.model.Disponibilidad;
 import com.Gropo06.turnos_medicos.model.Especialidad;
@@ -19,6 +20,7 @@ import com.Gropo06.turnos_medicos.repository.ProfesionalRepository;
 import com.Gropo06.turnos_medicos.repository.SucursalRepository;
 import com.Gropo06.turnos_medicos.repository.TurnoRepository;
 import com.Gropo06.turnos_medicos.service.EmailService;
+import com.Gropo06.turnos_medicos.service.TurnoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,18 +35,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
-/**
- * TurnoController contiene:
- *  1) Endpoints REST (con @ResponseBody) para:
- *     - /api/sucursales-por-especialidad    → devuelve JSON de SucursalDTO (id+nombre)
- *     - /api/turnos/slots                  → devuelve JSON lista de SlotDTO según filtro
- *
- *  2) Endpoints tradicionales Thymeleaf:
- *     - GET  /turnos           → muestra filtro inicial
- *     - POST /turnos/buscar    → procesa el formulario clásico y devuelve la misma vista con slots en el modelo
- *     - POST /turnos/reservar  → reserva un turno y redirige a /mis-turnos
- *     - GET  /mis-turnos       → muestra la lista de turnos del paciente
- */
 @Controller
 public class TurnoController {
 
@@ -58,6 +48,8 @@ public class TurnoController {
     private final EstadoTurnoRepository estadoRepo;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private TurnoService turnoService;
     
 
     public TurnoController(EspecialidadRepository espRepo,
@@ -92,12 +84,6 @@ public class TurnoController {
         public String getNombre() { return nombre; }
     }
 
-    //======================================================================================================
-    // 2) ENDPOINT REST: Obtener slots (franjas libres) según filtro (JSON)
-    //    URL ejemplo: GET /api/turnos/slots?idEspecialidad=3&idSucursal=2&desde=2025-06-01&hasta=2025-06-10
-    //    Responde un JSON con lista de SlotDTO, donde cada SlotDTO contiene:
-    //      { idProfesional, idEspecialidad, idSucursal, fecha, horaInicio, horaFin }
-    //======================================================================================================
     @GetMapping("/api/turnos/slots")
     @ResponseBody
     public ResponseEntity<List<SlotDTO>> getSlotsPorFiltro(
@@ -108,9 +94,9 @@ public class TurnoController {
 
         // 1) Valido y recupero Especialidad y Sucursal
         Especialidad espElegida = espRepo.findById(idEsp)
-                .orElseThrow(() -> new IllegalArgumentException("Especialidad inválida Id: " + idEsp));
+                .orElseThrow(() -> new CustomException("Especialidad inválida Id: " + idEsp));
         Sucursal sucElegida = sucRepo.findById(idSuc)
-                .orElseThrow(() -> new IllegalArgumentException("Sucursal inválida Id: " + idSuc));
+                .orElseThrow(() -> new CustomException("Sucursal inválida Id: " + idSuc));
 
         // 2) Busco en Disponibilidad todas las filas que coincidan:
         //    - Profesional con espElegida
@@ -210,7 +196,7 @@ public class TurnoController {
         // 2) Si ya se eligió especialidad, recupero sucursales correspondientes
         if (filtro.getIdEspecialidad() != null) {
             Especialidad espElegida = espRepo.findById(filtro.getIdEspecialidad())
-                    .orElseThrow(() -> new IllegalArgumentException("Especialidad inválida"));
+                    .orElseThrow(() -> new CustomException("Especialidad inválida"));
             List<Sucursal> sucursalesQueAtienden = sucRepo.findDistinctByProfesionalesEspecialidadId(filtro.getIdEspecialidad());
             model.addAttribute("sucursales", sucursalesQueAtienden);
         } else {
@@ -228,9 +214,9 @@ public class TurnoController {
 
         // 4) Recupero entidades completas
         Especialidad espElegida = espRepo.findById(filtro.getIdEspecialidad())
-                .orElseThrow(() -> new IllegalArgumentException("Especialidad inválida"));
+                .orElseThrow(() -> new CustomException("Especialidad inválida"));
         Sucursal sucElegida = sucRepo.findById(filtro.getIdSucursal())
-                .orElseThrow(() -> new IllegalArgumentException("Sucursal inválida"));
+                .orElseThrow(() -> new CustomException("Sucursal inválida"));
 
         LocalDate desde = filtro.getFechaDesde();
         LocalDate hasta = filtro.getFechaHasta();
@@ -390,7 +376,7 @@ public class TurnoController {
 
         } catch (Exception e) {
             flash.addFlashAttribute("errorMsg", "Error al reservar turno: " + e.getMessage());
-            return "redirect:/turnos";
+            return "redirect:/mis-turnos";
         }
     }
 
@@ -404,7 +390,7 @@ public class TurnoController {
         String email = principal.getName();
         Paciente paciente = pacienteRepo
                 .findByContactoEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado"));
+                .orElseThrow(() -> new CustomException("Paciente no encontrado"));
 
         // 2) Busco todos los turnos de ese paciente
         List<Turno> misTurnos = turnoRepo.findByPaciente(paciente);
@@ -412,5 +398,17 @@ public class TurnoController {
         // 3) Paso al modelo para la vista
         model.addAttribute("misTurnos", misTurnos);
         return "paciente/mis_turnos";
+    }
+    
+    @PostMapping("/turnos/cancelar")
+    public String cancelarTurno(@RequestParam("idTurno") Long idTurno) {
+        Turno turno = turnoRepo.findById(idTurno)
+                .orElseThrow(() -> new CustomException("Turno no encontrado"));
+
+            if (turno.getEstado().getNombre().equalsIgnoreCase("Cancelado")) {
+                throw new CustomException("El turno ya está cancelado");
+            }
+        turnoService.cancelarTurno(idTurno);
+        return "redirect:/mis-turnos";
     }
 }

@@ -1,5 +1,6 @@
 package com.Gropo06.turnos_medicos.controller;
 
+import com.Gropo06.turnos_medicos.exceptions.CustomException;
 import com.Gropo06.turnos_medicos.model.Sucursal;
 import com.Gropo06.turnos_medicos.repository.SucursalRepository;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,9 @@ public class SucursalController {
 
 	@PostMapping("/save")
 	public String guardarSucursal(@ModelAttribute("sucursalForm") Sucursal sucursal) {
+		if (sucursalRepo.existsByNombre(sucursal.getNombre())) {
+		    throw new CustomException("Nombre Duplicado");
+		}
 		sucursalRepo.save(sucursal);
 		return "redirect:/empleado/sucursales";
 	}
@@ -35,7 +39,7 @@ public class SucursalController {
 	@GetMapping("/edit/{id}")
 	public String editarSucursal(@PathVariable("id") Long id, Model model) {
 		Sucursal suc = sucursalRepo.findById(id)
-				.orElseThrow(() -> new IllegalArgumentException("Sucursal inválida Id:" + id));
+				.orElseThrow(() -> new CustomException("Sucursal inválida Id:" + id));
 		model.addAttribute("sucursalForm", suc);
 
 		List<Sucursal> lista = sucursalRepo.findAll();

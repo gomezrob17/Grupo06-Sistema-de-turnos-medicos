@@ -52,70 +52,42 @@
 
       <nav class="sidebar-nav">
         <a th:href="@{/}" class="nav-link">Inicio</a>
-        <a th:href="@{/perfil}" class="nav-link">Perfil</a>
+        <a th:href="@{/perfil}" class="nav-link active">Perfil</a>
         <a th:href="@{/grupo-familiar}" class="nav-link">Grupo Familiar</a>
-        <a th:href="@{/turnos}" class="nav-link active">Turnos</a>
+        <a th:href="@{/mis-turnos}" class="nav-link">Mis Turnos</a>
         <a th:href="@{/resultados}" class="nav-link">Resultados</a>
       </nav>
     </aside>
 
-    <!-- Contenido principal de turnos -->
+    <!-- Contenido principal del perfil -->
     <section class="perfil-content">
-      <div class="turnos-section">
-        <h1>Mis Turnos</h1>
 
-        <div class="acciones-turnos">
-          <!-- Mostrar el rol actual para depuración -->
-          <p><strong>Rol detectado:</strong> <span th:text="${user.rol.nombre}">[ROL]</span></p>
-        </div>
+      <!-- Datos personales -->
+      <div class="card">
+        <h2>Datos personales</h2>
+        <p><strong>Nombre:</strong> <span th:text="${user.nombre}">Juan</span></p>
+        <p><strong>Apellido:</strong> <span th:text="${user.apellido}">Lopez</span></p>
+        <p><strong>Tipo:</strong> DNI</p>
+        <p><strong>Número:</strong> <span th:text="${user.dni}">44895823</span></p>
+        <p><strong>Fecha de nacimiento:</strong> <span th:text="${user.fechaNacimiento}">2003-08-01</span></p>
+        <p><strong>Género:</strong> <span th:text="${user.genero}">Masculino</span></p>
+      </div>
 
-        <div class="tabla-turnos">
-          <table>
-            <thead>
-              <tr>
-                <th>Especialidad</th>
-                <th>Médico</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr th:each="turno : ${turnos}">
-                <td th:text="${turno.especialidad.nombre}">Clínica Médica</td>
-                <td th:text="${turno.profesional.nombre + ' ' + turno.profesional.apellido}">Dr. Pérez</td>
-                <td th:text="${#dates.format(turno.fecha, 'dd/MM/yyyy')}">30/05/2025</td>
-                <td th:text="${turno.horario}">10:00</td>
-                <td th:text="${turno.estado.nombre}">Confirmado</td>
-                <td>
-                  <a href="#" class="btn-small">Cancelar</a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+      <!-- Datos de contacto -->
+      <div class="card collapsible">
+        <h2>Datos de contacto</h2>
+        <div class="content">
+          <p><strong>Email:</strong> <span th:text="${user.contacto.email}">correo@ejemplo.com</span></p>
+          <p><strong>Teléfono:</strong> <span th:text="${user.contacto.telefono}">011-1234-5678</span></p>
         </div>
       </div>
+
+      <!-- Cobertura -->
+
     </section>
   </main>
 
   <!-- Scripts -->
-  <script>
-    // Colapsar secciones
-    document.querySelectorAll(".collapsible").forEach(section => {
-      section.querySelector("h2").addEventListener("click", () => {
-        section.classList.toggle("open");
-      });
-    });
-
-    // Dropdown del usuario
-    document.querySelector(".btn-user").addEventListener("click", e => {
-      e.stopPropagation();
-      document.querySelector(".dropdown-menu").classList.toggle("show");
-    });
-    document.addEventListener("click", () => {
-      document.querySelector(".dropdown-menu").classList.remove("show");
-    });
-  </script>
+<script th:src="@{/js/perfil.js}"></script>
 </body>
 </html>

@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface TurnoService {
     void crearTurno(Turno turno);
+    void cancelarTurno(Long idTurno);
     List<Turno> obtenerTurnosDisponibles();
     List<Turno> obtenerTodos();
 }

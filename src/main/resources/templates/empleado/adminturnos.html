@@ -5,102 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mis Turnos</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <style>
-    :root {
-      --primary: #297B8E;
-      --secondary: #6FBB90;
-      --dark-bg: #2d3033;
-      --light-bg: #f8f8f8;
-      --white: #fff;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Roboto', sans-serif;
-      background: var(--light-bg);
-    }
-
-    .sidebar {
-      width: 220px;
-      min-height: 100vh;
-      background: var(--dark-bg);
-      color: #cfd8dc;
-      position: fixed;
-      top: 0;
-      left: 0;
-      padding-top: 1rem;
-    }
-
-    .sidebar .logo {
-      text-align: center;
-      padding: 1rem 0;
-    }
-
-    .sidebar .logo img {
-      max-height: 50px;
-    }
-
-    .sidebar .logo h5 {
-      color: var(--white);
-      margin-top: 0.5rem;
-      font-weight: bold;
-    }
-
-    .sidebar .nav-link {
-      display: block;
-      padding: 0.75rem 1rem;
-      color: #cfd8dc;
-      text-decoration: none;
-    }
-
-    .sidebar .nav-link.active,
-    .sidebar .nav-link:hover {
-      background: #424549;
-      color: var(--white);
-    }
-
-    .main {
-      margin-left: 220px; /* same as sidebar width */
-      padding: 2rem;
-    }
-
-    .main h2 {
-      color: var(--primary);
-      margin-bottom: 1rem;
-    }
-
-    .btn-add {
-      background: var(--secondary);
-      border: none;
-      color: var(--white);
-    }
-
-    .table thead {
-      background: var(--primary);
-      color: var(--white);
-    }
-
-    .table tbody tr:hover {
-      background: rgba(41, 123, 142, .1);
-    }
-
-    .card-header {
-      background: var(--primary);
-      color: var(--white);
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  	integrity="sha512-…" crossorigin="anonymous" />
+  <link rel="stylesheet" th:href="@{/css/adminturnos.css}" />
 </head>
 <body>
-  <div class="sidebar">
-    <div class="logo">
-      <img th:src="@{/images/home/home-hospVidaNova.png}" alt="Logo Hospital Vida Nova" />
-    </div>
-    <a class="nav-link" th:href="@{/empleado/pacientes}">Pacientes</a>
-    <a class="nav-link" th:href="@{/empleado/profesionales}">Profesionales</a>
-    <a class="nav-link active" th:href="@{/empleado/turnos}">Turnos</a>
-    <a class="nav-link" th:href="@{/empleado/especialidades}">Especialidades</a>
-    <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
-  </div>
+  <div class="d-flex">
+	<nav class="sidebar d-flex flex-column">
+		<div class="logo">
+			<img th:src="@{/images/home/home-hospVidaNova.png}" alt="Logo Hospital Vida Nova" />
+		</div>
+		<ul class="nav flex-column px-2">
+			<li class="nav-item">
+				<a th:href="@{/empleado/sucursales}" class="nav-link active">
+					<i class="fas fa-map-marker-alt me-2"></i>Sucursales
+				</a>
+			</li>
+			<li class="nav-item">
+				<a th:href="@{/empleado/especialidades}" class="nav-link">
+					<i class="fas fa-notes-medical me-2"></i>Especialidades
+				</a>
+			</li>
+			<li class="nav-item">
+				<a th:href="@{/empleado/profesionales}" class="nav-link">
+					<i class="fas fa-user-md me-2"></i>Profesionales
+				</a>
+			</li>
+			<li class="nav-item">
+				<a th:href="@{/empleado/turnos}" class="nav-link">
+					<i class="fas fa-calendar-check me-2"></i>Turnos
+				</a>
+			</li>
+			<li class="nav-item mt-auto">
+				<form th:action="@{/logout}" method="post" style="display:inline">
+					<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+					<button type="submit" class="nav-link">Cerrar Sesión</button>
+				</form>
+			</li>
+		</ul>
+	</nav>
 
   <div class="main">
     <h1>Turnos</h1>

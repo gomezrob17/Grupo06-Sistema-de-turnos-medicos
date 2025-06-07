@@ -8,7 +8,7 @@ public class EmpleadoController {
 
     @GetMapping("/empleado/dashboard")
     public String mostrarDashboardEmpleado() {
-        // Redirección a src/main/resources/templates/dashboard.html (falta pulir)
+        // Redirección a src/main/resources/templates/dashboard.html
         return "dashboard";
     }
 }

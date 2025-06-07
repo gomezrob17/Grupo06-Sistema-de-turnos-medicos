@@ -10,4 +10,6 @@ import java.util.List;
 public interface TurnoRepository extends JpaRepository<Turno, Long> {
     List<Turno> findByPaciente(Paciente paciente);
     List<Turno> findByEstadoNombre(String estado);
+    boolean existsByProfesional_IdUsuario(Long idUsuario);
+    
 }
