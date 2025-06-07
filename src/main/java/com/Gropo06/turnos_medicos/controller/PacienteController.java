@@ -1,5 +1,6 @@
 package com.Gropo06.turnos_medicos.controller;
 
+import com.Gropo06.turnos_medicos.exceptions.CustomException;
 import com.Gropo06.turnos_medicos.model.Disponibilidad;
 import com.Gropo06.turnos_medicos.model.Especialidad;
 import com.Gropo06.turnos_medicos.model.Profesional;
@@ -16,10 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
-/**
- * Controlador REST para que el frontend de Paciente solicite:
- *   GET /paciente/turnos/buscar?idEspecialidad=…&idSucursal=…&desde=yyyy-MM-dd&hasta=yyyy-MM-dd
- */
 @RestController
 @RequestMapping("/paciente/turnos")
 public class PacienteController {
@@ -39,17 +36,6 @@ public class PacienteController {
         this.sucursalRepo = sucursalRepo;
     }
 
-    /**
-     * GET /paciente/turnos/buscar
-     * Parámetros:
-     *   - idEspecialidad: ID de la especialidad
-     *   - idSucursal:     ID de la sucursal
-     *   - desde:          fecha mínima (formato ISO yyyy-MM-dd)
-     *   - hasta:          fecha máxima (formato ISO yyyy-MM-dd)
-     *
-     * Devuelve JSON con la lista de “ResultadoParaFront”, es decir,
-     * para cada (profesional + día) un listado de franjas horarias.
-     */
     @GetMapping("/buscar")
     public ResponseEntity<List<ResultadoParaFront>> buscarTurnosDisponibles(
             @RequestParam("idEspecialidad") Long idEsp,
@@ -61,11 +47,11 @@ public class PacienteController {
 
         // 1) Recuperar la entidad Especialidad
         Especialidad esp = especialidadRepo.findById(idEsp)
-                .orElseThrow(() -> new IllegalArgumentException("Especialidad no válida: " + idEsp));
+                .orElseThrow(() -> new CustomException("Especialidad no válida: " + idEsp));
 
         // 2) Recuperar la entidad Sucursal (¡ojo! no pasar simplemente el Long)
         Sucursal suc = sucursalRepo.findById(idSuc)
-                .orElseThrow(() -> new IllegalArgumentException("Sucursal no válida: " + idSuc));
+                .orElseThrow(() -> new CustomException("Sucursal no válida: " + idSuc));
 
         // 3) Invocar al repositorio PASANDO la ENTIDAD Sucursal (no el Long)
         List<Disponibilidad> listaDisp = dispRepo

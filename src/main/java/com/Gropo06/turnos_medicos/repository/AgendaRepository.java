@@ -17,4 +17,6 @@ public interface AgendaRepository extends JpaRepository<Agenda, Long> {
         Sucursal sucursal,
         Especialidad tipoEspecialidad
     );
+    
+    boolean existsByTipoEspecialidad_IdEspecialidad(Long idEspecialidad);
 }

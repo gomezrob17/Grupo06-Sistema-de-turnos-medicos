@@ -1,14 +1,12 @@
 package com.Gropo06.turnos_medicos.controller;
 
 import com.Gropo06.turnos_medicos.model.*;
-import com.Gropo06.turnos_medicos.repository.PersonaRepository;
 import com.Gropo06.turnos_medicos.repository.UsuarioRepository;
 import com.Gropo06.turnos_medicos.service.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 public class TurnoViewController {
@@ -54,11 +52,13 @@ public class TurnoViewController {
             if (!(usuario instanceof Paciente)) {
                 throw new RuntimeException("El usuario no es un cliente válido");
             }
+            
             Paciente paciente = (Paciente) usuario;
-            model.addAttribute("turnos", paciente.getTurnos()); // El paciente ve solo los suyos
+            model.addAttribute("turno", paciente.getTurnos()); // El paciente ve solo los suyos
+
         }
 
-        return "turno";
+        return "paciente/turno";
     }
     
 }

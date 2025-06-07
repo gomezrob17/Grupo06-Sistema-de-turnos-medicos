@@ -35,4 +35,19 @@ public class HomeController {
 
 		return "home";
 	}
+	
+	@GetMapping("/ayuda")
+	public String ayuda() {
+		return "error/mantenimiento";
+	}
+	
+    @GetMapping("/atencion")
+    public String atencion() {
+    	return "error/mantenimiento";
+    }
+    
+    @GetMapping("/hospital")
+    public String hospital() {
+    	return "error/mantenimiento";
+    }
 }
