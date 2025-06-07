@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mis Turnos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #297B8E;
+      --secondary: #6FBB90;
+      --dark-bg: #2d3033;
+      --light-bg: #f8f8f8;
+      --white: #fff;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: var(--light-bg);
+    }
+
+    .sidebar {
+      width: 220px;
+      min-height: 100vh;
+      background: var(--dark-bg);
+      color: #cfd8dc;
+      position: fixed;
+      top: 0;
+      left: 0;
+      padding-top: 1rem;
+    }
+
+    .sidebar .logo {
+      text-align: center;
+      padding: 1rem 0;
+    }
+
+    .sidebar .logo img {
+      max-height: 50px;
+    }
+
+    .sidebar .logo h5 {
+      color: var(--white);
+      margin-top: 0.5rem;
+      font-weight: bold;
+    }
+
+    .sidebar .nav-link {
+      display: block;
+      padding: 0.75rem 1rem;
+      color: #cfd8dc;
+      text-decoration: none;
+    }
+
+    .sidebar .nav-link.active,
+    .sidebar .nav-link:hover {
+      background: #424549;
+      color: var(--white);
+    }
+
+    .main {
+      margin-left: 220px; /* same as sidebar width */
+      padding: 2rem;
+    }
+
+    .main h2 {
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .btn-add {
+      background: var(--secondary);
+      border: none;
+      color: var(--white);
+    }
+
+    .table thead {
+      background: var(--primary);
+      color: var(--white);
+    }
+
+    .table tbody tr:hover {
+      background: rgba(41, 123, 142, .1);
+    }
+
+    .card-header {
+      background: var(--primary);
+      color: var(--white);
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <div class="logo">
+      <img th:src="@{/images/home/home-hospVidaNova.png}" alt="Logo Hospital Vida Nova" />
+    </div>
+    <a class="nav-link" th:href="@{/empleado/pacientes}">Pacientes</a>
+    <a class="nav-link" th:href="@{/empleado/profesionales}">Profesionales</a>
+    <a class="nav-link active" th:href="@{/empleado/turnos}">Turnos</a>
+    <a class="nav-link" th:href="@{/empleado/especialidades}">Especialidades</a>
+    <a class="nav-link" th:href="@{/logout}">Cerrar sesión</a>
+  </div>
+
+  <div class="main">
+    <h1>Turnos</h1>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Especialidad</th>
+          <th>Profesional</th>
+          <th>Sucursal</th>
+          <th>Paciente</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="turno : ${turnos}">
+          <td th:text="${turno.idTurno}"></td>
+          <td th:text="${#temporals.format(turno.agenda.dia, 'dd/MM/yyyy')}"></td>
+          <td th:text="${#temporals.format(turno.hora, 'HH:mm')}"></td>
+          <td th:text="${turno.agenda.tipoEspecialidad.nombre}"></td>
+          <td th:text="${turno.profesional.nombre + ' ' + turno.profesional.apellido}"></td>
+          <td th:text="${turno.agenda.sucursal.nombre}"></td>
+          <td th:text="${turno.paciente.nombre + ' ' + turno.paciente.apellido}"></td>
+          <td th:text="${turno.estado.nombre}"></td>
+          <td>
+            <form th:action="@{/turnos/cancelar}" method="post" th:object="${turno}"
+                  onsubmit="return confirm('¿Estás seguro de que deseas cancelar este turno?');">
+              <input type="hidden" name="idTurno" th:value="${turno.idTurno}" />
+              <button type="submit" class="btn btn-danger btn-sm">Cancelar</button>
+            </form>
+          </td>
+        </tr>
+        <tr th:if="${#lists.isEmpty(turnos)}">
+          <td colspan="9" class="text-center text-muted">No registraste ningún turno aún.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
