@@ -71,7 +71,7 @@ public class TurnoController {
     }
 
 
-    // DTO interno para serializar sucursales en JSON
+    // DTO para serializar sucursales en JSON
     public static class SucursalDTO {
         private Long id;
         private String nombre;
@@ -399,6 +399,9 @@ public class TurnoController {
         model.addAttribute("misTurnos", misTurnos);
         return "paciente/mis_turnos";
     }
+    
+    // Cancelo un turno desde el lado paciente
+    // Nota: la cancelacion no elimina, si no que genera un cambio en EstadoTurno a "Cancelado"
     
     @PostMapping("/turnos/cancelar")
     public String cancelarTurno(@RequestParam("idTurno") Long idTurno) {

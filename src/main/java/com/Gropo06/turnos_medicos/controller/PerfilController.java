@@ -35,8 +35,10 @@ public class PerfilController {
         model.addAttribute("user", persona); // para el HTML perfil.html
         model.addAttribute("displayName", nombreMostrar); // para el dropdown del header
 
-        return "paciente/perfil"; // nombre del archivo HTML sin extensión
+        return "paciente/perfil";
     }
+    
+    // Vistas que aun no estan disponibles
     
     @GetMapping("/grupo-familiar")
     public String grupoFamiliar() {

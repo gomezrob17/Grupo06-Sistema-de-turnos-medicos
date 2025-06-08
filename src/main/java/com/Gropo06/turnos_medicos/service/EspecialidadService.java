@@ -17,6 +17,6 @@ public class EspecialidadService {
     }
     
     public Especialidad buscarEspecialidadPorId(Long id) {
-        return repo.findById(id).orElse(null); // o lanzar una excepción
+        return repo.findById(id).orElse(null);
     }
 }

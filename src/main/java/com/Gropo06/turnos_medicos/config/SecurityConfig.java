@@ -23,26 +23,23 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            // Indicar nuestro UserDetailsService
-            .userDetailsService(userDetailsService)
+        http.userDetailsService(userDetailsService)
             .authorizeHttpRequests(auth -> auth
                 // Rutas estáticas y de login/registro
-                .requestMatchers("/css/**", "/images/**", "/login", "/register", "/error")
-                    .permitAll()
-                    .requestMatchers("/api/**").permitAll()  
+            .requestMatchers("/css/**", "/images/**", "/login", "/register", "/error")
+                  .permitAll()
+                  .requestMatchers("/api/**").permitAll()  
                 // Solo ROLE_EMPLEADO podrá acceder a /empleado/**
-                .requestMatchers("/empleado/**")
-                    .hasRole("EMPLEADO")
+            .requestMatchers("/empleado/**")
+                  .hasRole("EMPLEADO")
                 // Solo ROLE_PACIENTE podrá acceder a las rutas de Turnos 
-                .requestMatchers("/turnos/**", "/mis-turnos")
-                    .hasRole("PACIENTE")
-                // Si tienes alguna otra URL bajo /paciente/**, también la limitamos a ROLE_PACIENTE
-                .requestMatchers("/paciente/**")
-                    .hasRole("PACIENTE")
-                // El resto de las rutas requiere autenticar
-                .anyRequest()
-                    .authenticated()
+            .requestMatchers("/turnos/**", "/mis-turnos")
+                  .hasRole("PACIENTE")
+            .requestMatchers("/paciente/**")
+                  .hasRole("PACIENTE")
+                // Requerimos autenticacion
+            .anyRequest()
+            .authenticated()
             )
             // Configuración de formulario de login
             .formLogin(form -> form
@@ -74,8 +71,7 @@ public class SecurityConfig {
             boolean isPaciente = authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_PACIENTE"));
             if (isPaciente) {
-                // He supuesto que la “home” de paciente es /home. 
-                // Ajusta según tu controlador si quieres enviarlo a /paciente/turnos o a otra vista.
+                // La “home” de paciente es /home.
                 response.sendRedirect(request.getContextPath() + "/home");
                 return;
             }
