@@ -19,5 +19,8 @@ public interface SucursalRepository extends JpaRepository<Sucursal, Long> {
           JOIN s.profesionales p 
          WHERE p.especialidad.idEspecialidad = :idEsp
         """)
+    
     List<Sucursal> findDistinctByProfesionalesEspecialidadId(@Param("idEsp") Long idEsp);
+
+	boolean existsByNombre(String nombre);
 }

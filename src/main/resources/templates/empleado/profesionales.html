@@ -11,91 +11,14 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
 		integrity="sha512-…" crossorigin="anonymous" />
 
-	<style>
-		:root {
-			--primary: #297B8E;
-			--secondary: #6FBB90;
-			--dark-bg: #2d3033;
-			--light-bg: #f8f8f8;
-			--white: #fff;
-		}
-
-		body {
-			margin: 0;
-			font-family: 'Roboto', sans-serif;
-			background: var(--light-bg);
-		}
-
-		.sidebar {
-			width: 220px;
-			min-height: 100vh;
-			background: var(--dark-bg);
-			color: #cfd8dc;
-		}
-
-		.sidebar .logo {
-			text-align: center;
-			padding: 1rem 0;
-		}
-
-		.sidebar .logo img {
-			max-height: 50px;
-		}
-
-		.sidebar .logo h5 {
-			color: var(--white);
-			margin-top: 0.5rem;
-			font-weight: bold;
-		}
-
-		.sidebar .nav-link {
-			color: #cfd8dc;
-		}
-
-		.sidebar .nav-link.active,
-		.sidebar .nav-link:hover {
-			background: #424549;
-			color: var(--white);
-		}
-
-		.main {
-			flex-grow: 1;
-			padding: 1.5rem;
-		}
-
-		.main h2 {
-			color: var(--primary);
-			margin-bottom: 1rem;
-		}
-
-		.btn-add {
-			background: var(--secondary);
-			border: none;
-			color: var(--white);
-		}
-
-		.table thead {
-			background: var(--primary);
-			color: var(--white);
-		}
-
-		.table tbody tr:hover {
-			background: rgba(41, 123, 142, .1);
-		}
-
-		.card-header {
-			background: var(--primary);
-			color: var(--white);
-		}
-	</style>
+	<link rel="stylesheet" th:href="@{/css/profesionales.css}" />
 </head>
 
 <body>
 	<div class="d-flex">
 		<nav class="sidebar d-flex flex-column">
 			<div class="logo">
-				<img th:src="@{/images/logo_oficial_vida_nova.png}" alt="Logo">
-				<h5>Vida Nova</h5>
+				<img th:src="@{/images/home/home-hospVidaNova.png}" alt="Logo Hospital Vida Nova" />
 			</div>
 			<ul class="nav flex-column px-2">
 				<li class="nav-item">
@@ -119,9 +42,10 @@
 					</a>
 				</li>
 				<li class="nav-item mt-auto">
-					<a th:href="@{/logout}" class="nav-link">
-						<i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesión
-					</a>
+					<form th:action="@{/logout}" method="post" style="display:inline">
+						<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+						<button type="submit" class="nav-link">Cerrar Sesión</button>
+					</form>
 				</li>
 			</ul>
 		</nav>
@@ -427,95 +351,7 @@
 	</div>
 
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-	<script>
-		document.addEventListener('DOMContentLoaded', () => {
-			const formDiv = document.getElementById('form-profesional');
-			const toggleBtn = document.getElementById('toggle-form');
-			const cancelBtn = document.getElementById('cancel-form');
-
-			toggleBtn.addEventListener('click', () => {
-				formDiv.classList.toggle('d-none');
-			});
-			cancelBtn.addEventListener('click', () => {
-				formDiv.classList.add('d-none');
-				formDiv.querySelectorAll('input[type="text"], input[type="date"], input[type="email"], input[type="number"], input[type="time"]').forEach(input => input.value = '');
-				formDiv.querySelectorAll('select').forEach(sel => sel.selectedIndex = -1);
-				formDiv.querySelector('input[name="idUsuario"]').value = '';
-				const tbodyDisp = document.querySelector('#disp-table tbody');
-				tbodyDisp.querySelectorAll('tr').forEach(row => row.remove());
-			});
-
-			// Reindexar filas de disponibilidad después de eliminar o agregar la misma
-			function reindexDisp() {
-				const rows = Array.from(document.querySelectorAll('#disp-table tbody tr'));
-				rows.forEach((row, i) => {
-					row.id = 'disp-row-' + i;
-					const hidden = row.querySelector('input[type="hidden"]');
-					if (hidden) hidden.name = `disponibilidades[${i}].idDisponibilidad`;
-					const sucSelect = row.querySelector('select[name*=".sucursal.idSucursal"]');
-					if (sucSelect) sucSelect.name = `disponibilidades[${i}].sucursal.idSucursal`;
-					const fechaIn = row.querySelector('input[type="date"][name*=".fecha"]');
-					if (fechaIn) fechaIn.name = `disponibilidades[${i}].fecha`;
-					const horaIn = row.querySelector('input[type="time"][name*=".horaInicio"]');
-					if (horaIn) horaIn.name = `disponibilidades[${i}].horaInicio`;
-					const horaFn = row.querySelector('input[type="time"][name*=".horaFin"]');
-					if (horaFn) horaFn.name = `disponibilidades[${i}].horaFin`;
-				});
-			}
-
-			document.getElementById('add-disp').addEventListener('click', () => {
-				const tbody = document.querySelector('#disp-table tbody');
-				const idx = tbody.querySelectorAll('tr').length;
-				const newRow = document.createElement('tr');
-				newRow.id = 'disp-row-' + idx;
-
-				const sucursalesOptions = document.getElementById('tpl-suc-options').innerHTML;
-
-				newRow.innerHTML = `
-          <input type="hidden" name="disponibilidades[${idx}].idDisponibilidad" value="" />
-
-          <!-- Selector Sucursal -->
-          <td>
-            <select class="form-select" name="disponibilidades[${idx}].sucursal.idSucursal" required>
-              ${sucursalesOptions}
-            </select>
-          </td>
-
-          <!-- Input Fecha -->
-          <td>
-            <input type="date" class="form-control" name="disponibilidades[${idx}].fecha" required />
-          </td>
-
-          <!-- Input Hora Inicio -->
-          <td>
-            <input type="time" class="form-control" name="disponibilidades[${idx}].horaInicio" required />
-          </td>
-
-          <!-- Input Hora Fin -->
-          <td>
-            <input type="time" class="form-control" name="disponibilidades[${idx}].horaFin" required />
-          </td>
-
-          <!-- Botón Eliminar -->
-          <td>
-            <button type="button" class="btn btn-sm btn-danger btn-remove-disp">Eliminar</button>
-          </td>
-        `;
-				tbody.appendChild(newRow);
-			});
-
-			document.addEventListener('click', (e) => {
-				if (e.target.matches('.btn-remove-disp')) {
-					const row = e.target.closest('tr');
-					if (row) {
-						row.remove();
-						reindexDisp();
-					}
-				}
-			});
-		});
-	</script>
+	<script th:src="@{/js/profesionales.js}"></script>
 </body>
 
 </html>

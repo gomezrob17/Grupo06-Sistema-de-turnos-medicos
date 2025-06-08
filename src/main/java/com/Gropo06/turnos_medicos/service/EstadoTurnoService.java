@@ -18,6 +18,10 @@ public class EstadoTurnoService {
         return estadoTurnoRepository.findByNombre(nombre)
             .orElseThrow(() -> new RuntimeException("EstadoTurno no encontrado: " + nombre));
     }
+    
+    public EstadoTurno obtenerEstadoCancelado() {
+        return obtenerPorNombre("CANCELADO");
+    }
 
     public List<EstadoTurno> listarTodos() {
         return estadoTurnoRepository.findAll();
