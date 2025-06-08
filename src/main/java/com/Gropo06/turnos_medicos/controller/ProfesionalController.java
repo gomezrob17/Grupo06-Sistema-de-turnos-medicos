@@ -160,7 +160,7 @@ public class ProfesionalController {
 
 			// Nuevo Contacto
 			Contacto nuevoContacto = new Contacto(email, telefono);
-			if (contactoRepo.existsByEmail(nuevoContacto.getEmail())) {
+			if (contactoRepo.existsByEmail(nuevoContacto.getEmail())) {		// Verificamos que el contacto no exista en la BD
 			    throw new CustomException("Email ya existente");
 			}
 			contactoRepo.save(nuevoContacto);
@@ -218,8 +218,7 @@ public class ProfesionalController {
 		return "redirect:/empleado/profesionales";
 	}
 
-	// Recorre la lista de Disponibilidades y devuelve null si no existen
-	// solapamientos
+	// Recorre la lista de Disponibilidades y devuelve null si no existen solapamientos.
 	// En caso de encontrar fecha y horarios iguales que se superponen, devuelve el
 	// mensaje de error con detalle
 
@@ -280,7 +279,7 @@ public class ProfesionalController {
 
 	@GetMapping("/delete/{id}")
 	public String eliminarProfesional(@PathVariable("id") Long id) {
-	    if (turnoRepo.existsByProfesional_IdUsuario(id)) throw new CustomException("El profesional posee Turnos asignados.");
+	    if (turnoRepo.existsByProfesional_IdUsuario(id)) throw new CustomException("El profesional posee Turnos asignados.");	// Verifico que no haya un turno relacionado a dicho profesional
 		profesionalRepo.deleteById(id);
 		return "redirect:/empleado/profesionales";
 	}

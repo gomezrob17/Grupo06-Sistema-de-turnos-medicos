@@ -36,6 +36,8 @@ public class HomeController {
 		return "home";
 	}
 	
+	// Vistas que aun no estan disponibles
+	
 	@GetMapping("/ayuda")
 	public String ayuda() {
 		return "error/mantenimiento";

@@ -41,7 +41,7 @@ public class EspecialidadController {
 	}
 
 	// Guarda nueva especialidad o actualiza una ya existente
-	// Si el campo idEspecialidad es null, se crea si no, se actualiza
+	// Si el campo idEspecialidad es null, se crea, si no, se actualiza
 
 	@PostMapping("/save")
 	public String guardarEspecialidad(@ModelAttribute("especialidadForm") Especialidad esp) {
@@ -68,6 +68,7 @@ public class EspecialidadController {
 	}
 
 	// Eliminar una especialidad.
+	// Verificando si ya existe una agenda o profesional con dicha especialidad, en caso de haber, lanza excepcion
 
 	@GetMapping("/delete/{id}")
 	public String eliminarEspecialidad(@PathVariable("id") Long id) {

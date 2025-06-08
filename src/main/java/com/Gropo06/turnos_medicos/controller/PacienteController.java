@@ -24,7 +24,7 @@ public class PacienteController {
     private final DisponibilidadRepository dispRepo;
     private final ProfesionalRepository profesionalRepo;
     private final EspecialidadRepository especialidadRepo;
-    private final SucursalRepository sucursalRepo;  // ◀— inyectamos también SucursalRepository
+    private final SucursalRepository sucursalRepo;
 
     public PacienteController(DisponibilidadRepository dispRepo,
                               ProfesionalRepository profesionalRepo,
@@ -45,15 +45,15 @@ public class PacienteController {
             @RequestParam("hasta") 
               @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hasta) {
 
-        // 1) Recuperar la entidad Especialidad
+        // 1) Recuperamos la entidad Especialidad
         Especialidad esp = especialidadRepo.findById(idEsp)
                 .orElseThrow(() -> new CustomException("Especialidad no válida: " + idEsp));
 
-        // 2) Recuperar la entidad Sucursal (¡ojo! no pasar simplemente el Long)
+        // 2) Recuperamos la entidad Sucursal (¡ojo! no pasar simplemente el Long)
         Sucursal suc = sucursalRepo.findById(idSuc)
                 .orElseThrow(() -> new CustomException("Sucursal no válida: " + idSuc));
 
-        // 3) Invocar al repositorio PASANDO la ENTIDAD Sucursal (no el Long)
+        // 3) Invocamos al repositorio PASANDO la ENTIDAD Sucursal (no el Long)
         List<Disponibilidad> listaDisp = dispRepo
             .findByProfesional_EspecialidadAndSucursalAndFechaBetween(
                 esp,
@@ -62,14 +62,14 @@ public class PacienteController {
                 hasta
             );
 
-        // 4) Agrupar por (profesionalId + fecha)
+        // 4) Agrupamos por (profesionalId + fecha)
         Map<String, List<Disponibilidad>> agrupado = new HashMap<>();
         for (Disponibilidad d : listaDisp) {
             String key = d.getProfesional().getIdUsuario() + "|" + d.getFecha().toString();
             agrupado.computeIfAbsent(key, k -> new ArrayList<>()).add(d);
         }
 
-        // 5) Para cada grupo (profesional + día) generar las franjas según la duración
+        // 5) Para cada grupo (profesional + día) se generan las franjas según la duración
         List<ResultadoParaFront> resultado = new ArrayList<>();
         for (Map.Entry<String, List<Disponibilidad>> entry : agrupado.entrySet()) {
             List<Disponibilidad> dList = entry.getValue();
@@ -102,7 +102,7 @@ public class PacienteController {
     }
 
     // ────────────────────────────────────────────────────────────────────────
-    // DTO ligero para enviar al front:
+    // DTO para enviar al front:
     public static class ResultadoParaFront {
         private ProfesionalDTO profesional;
         private String dia;
