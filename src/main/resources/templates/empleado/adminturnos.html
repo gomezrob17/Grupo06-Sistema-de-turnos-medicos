@@ -72,10 +72,11 @@
           <td th:text="${turno.paciente.nombre + ' ' + turno.paciente.apellido}"></td>
           <td th:text="${turno.estado.nombre}"></td>
           <td>
-            <form th:action="@{/turnos/cancelar}" method="post" th:object="${turno}"
-                  onsubmit="return confirm('¿Estás seguro de que deseas cancelar este turno?');">
+            <form th:action="@{/empleado/eliminar}" method="post" th:object="${turno}"
+                  onsubmit="return confirm('¿Estás seguro de que deseas eliminar este turno?');">
               <input type="hidden" name="idTurno" th:value="${turno.idTurno}" />
-              <button type="submit" class="btn btn-danger btn-sm">Cancelar</button>
+			  <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+              <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
             </form>
           </td>
         </tr>
