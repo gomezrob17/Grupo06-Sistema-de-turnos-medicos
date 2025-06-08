@@ -4,6 +4,7 @@ import com.Gropo06.turnos_medicos.exceptions.CustomException;
 import com.Gropo06.turnos_medicos.model.Especialidad;
 import com.Gropo06.turnos_medicos.repository.AgendaRepository;
 import com.Gropo06.turnos_medicos.repository.EspecialidadRepository;
+import com.Gropo06.turnos_medicos.repository.ProfesionalRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,6 +21,9 @@ public class EspecialidadController {
 	
 	@Autowired
 	private AgendaRepository agendaRepo;
+	
+	@Autowired
+	private ProfesionalRepository profesionalRepo;
 
 	public EspecialidadController(EspecialidadRepository especialidadRepo) {
 		this.especialidadRepo = especialidadRepo;
@@ -68,6 +72,7 @@ public class EspecialidadController {
 	@GetMapping("/delete/{id}")
 	public String eliminarEspecialidad(@PathVariable("id") Long id) {
 		if (agendaRepo.existsByTipoEspecialidad_IdEspecialidad(id)) throw new CustomException("Especialidad ya tiene una Agenda asignada.");
+		if (profesionalRepo.existsByEspecialidad_IdEspecialidad(id)) throw new CustomException("Especialidad ya tiene Profesionales asignados.");
 		especialidadRepo.deleteById(id);
 		return "redirect:/empleado/especialidades";
 	}
