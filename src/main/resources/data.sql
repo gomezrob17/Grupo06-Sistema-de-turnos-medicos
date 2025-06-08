@@ -1,5 +1,5 @@
-
-/*INSERT INTO roles(nombre) VALUES ('EMPLEADO'), ('PACIENTE'), ('PROFESIONAL');
+/*
+INSERT INTO roles(nombre) VALUES ('EMPLEADO'), ('PACIENTE'), ('PROFESIONAL');
 
 -- 1) Creo el contacto del EMPLEADO "Admin"
 INSERT INTO contactos (email, telefono)
@@ -25,12 +25,13 @@ INSERT INTO empleados (id_usuario, activo)
 VALUES (
   (SELECT id_usuario FROM usuarios WHERE dni = '00000000'),
   TRUE
-);*/
+);
 
-/*
+
 INSERT INTO turnos_medicos.estados_turnos (id_estado, nombre)
 VALUES
   (1, 'CONFIRMADO'),
   (2, 'PENDIENTE'),
   (3, 'CANCELADO');
+
 */
