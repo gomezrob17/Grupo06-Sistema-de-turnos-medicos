@@ -4,48 +4,66 @@ import com.Gropo06.turnos_medicos.model.Paciente;
 import com.Gropo06.turnos_medicos.model.Rol;
 import com.Gropo06.turnos_medicos.repository.PacienteRepository;
 import com.Gropo06.turnos_medicos.repository.RolRepository;
+
+import jakarta.validation.Valid;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class RegistrationController {
 
-	private final PacienteRepository pacienteRepo;
-	private final RolRepository rolRepo;
-	private final PasswordEncoder passwordEncoder;
+    private final PacienteRepository pacienteRepo;
+    private final RolRepository rolRepo;
+    private final PasswordEncoder passwordEncoder;
 
-	public RegistrationController(PacienteRepository pacienteRepo, RolRepository rolRepo,
-			PasswordEncoder passwordEncoder) {
-		this.pacienteRepo = pacienteRepo;
-		this.rolRepo = rolRepo;
-		this.passwordEncoder = passwordEncoder;
-	}
+    public RegistrationController(PacienteRepository pacienteRepo, RolRepository rolRepo,
+                                  PasswordEncoder passwordEncoder) {
+        this.pacienteRepo = pacienteRepo;
+        this.rolRepo = rolRepo;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-	// Form de registro
-	@GetMapping("/register")
-	public String showRegistrationForm(@RequestParam(value = "success", required = false) boolean success,
-			Model model) {
-		model.addAttribute("paciente", new Paciente());
-		model.addAttribute("registered", success);
-		return "registro";
-	}
+    // Mostrar formulario de registro
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) {
+        if (!model.containsAttribute("paciente")) {
+            model.addAttribute("paciente", new Paciente());
+        }
+        return "registro";
+    }
 
-	// Se procesa el envío del form
-	@PostMapping("/register")
-	public String registerPacient(@ModelAttribute("paciente") Paciente paciente, Model model) {
-		// Asigna rol CLIENTE
-		Rol rolPaciente = rolRepo.findByNombre("PACIENTE")
-				.orElseThrow(() -> new RuntimeException("Rol PACIENTE no existe"));
-		paciente.setRol(rolPaciente);
+    // Procesar registro
+    @PostMapping("/register")
+    public String registerPacient(@ModelAttribute("paciente") Paciente paciente, Model model) {
+        try {
+            // Verificamos que no haya un paciente con mismo DNI (opcional, pero recomendado)
+            if (pacienteRepo.findByDni(paciente.getDni()).isPresent()) {
+                model.addAttribute("error", "Ya existe un paciente con ese DNI");
+                return "registro";  // vuelve al formulario mostrando error
+            }
 
-		// Codificamos la Contraseña
-		paciente.setPassword(passwordEncoder.encode(paciente.getPassword()));
+            // Buscamos el rol PACIENTE
+            Rol rolPaciente = rolRepo.findByNombre("PACIENTE")
+                    .orElseThrow(() -> new RuntimeException("Rol PACIENTE no existe"));
+            paciente.setRol(rolPaciente);
 
-		// Guardamos la info del cliente en la DB
-		pacienteRepo.save(paciente);
+            // Codificamos la contraseña
+            paciente.setPassword(passwordEncoder.encode(paciente.getPassword()));
 
-		return "redirect:/login?registered";
-	}
+            // Guardamos paciente en DB
+            pacienteRepo.save(paciente);
+
+            // Redirigimos al login con parámetro para mostrar mensaje
+            return "redirect:/login?registered";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            model.addAttribute("error", "Error interno al registrar paciente");
+            return "registro";
+        }
+    }
 }

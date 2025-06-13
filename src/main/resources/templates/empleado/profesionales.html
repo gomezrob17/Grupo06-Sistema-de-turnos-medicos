@@ -99,11 +99,14 @@
 						</div>
 						<div class="row">
 							<div class="col-md-3 mb-3">
-								<label class="form-label">Fecha Nacimiento</label>
-								<input type="date" class="form-control" th:name="fechaNacimiento"
-									th:value="${#temporals.format(profesionalForm.fechaNacimiento, 'yyyy-MM-dd')}"
-									required />
-							</div>
+    <label class="form-label">Fecha Nacimiento</label>
+    <input type="date" class="form-control" th:name="fechaNacimiento"
+        th:value="${#temporals.format(profesionalForm.fechaNacimiento, 'yyyy-MM-dd')}"
+        required />
+    <div th:if="${errorFecha}" style="color: red; font-weight: bold; margin-top: 5px;">
+        <p th:text="${errorFecha}"></p>
+    </div>
+</div>
 							<div class="col-md-3 mb-3">
 								<label class="form-label">Género</label>
 								<select class="form-select" th:field="*{genero}">

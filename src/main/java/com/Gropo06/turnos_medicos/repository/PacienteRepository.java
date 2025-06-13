@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PacienteRepository extends JpaRepository<Paciente, Long> {
+	Optional<Paciente> findByDni(String dni);
 	Optional<Paciente> findByContactoEmail(String email);
 }

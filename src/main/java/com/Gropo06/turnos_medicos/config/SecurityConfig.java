@@ -24,30 +24,35 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.userDetailsService(userDetailsService)
-        	// Desactivamos la verificación CSRF para las rutas Rest que empiecen con /api/ permita POST sin token CSRF
-        	.csrf(csrf -> csrf
-        	    .ignoringRequestMatchers("/api/**")
-        	  )
-            .authorizeHttpRequests(auth -> auth
-                // Rutas estáticas y de login/registro
-            .requestMatchers("/css/**", "/images/**", "/login", "/register", "/error")
-                  .permitAll()
-                  
-                  .requestMatchers("/api/login", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                   
-                // Solo ROLE_EMPLEADO podrá acceder a /empleado/**
-            .requestMatchers("/empleado/**")
-                  .hasRole("EMPLEADO")
-                // Solo ROLE_PACIENTE podrá acceder a las rutas de Turnos 
-            .requestMatchers("/turnos/**", "/mis-turnos")
-                  .hasRole("PACIENTE")
-            .requestMatchers("/paciente/**")
-                  .hasRole("PACIENTE")
-                // Requerimos autenticacion
-            .anyRequest()
-            .authenticated()
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/api/**")
             )
-            // Configuración de formulario de login
+            .authorizeHttpRequests(auth -> auth
+                // Rutas públicas para recursos estáticos y login/registro
+                .requestMatchers("/css/**", "/images/**", "/login", "/register", "/error").permitAll()
+
+                // Rutas de Swagger - documentación pública
+                .requestMatchers(
+                    "/swagger-ui/**", 
+                    "/v3/api-docs/**", 
+                    "/swagger-ui.html",
+                    "/swagger-resources/**",
+                    "/webjars/**"
+                ).permitAll()
+
+                // Login REST
+                .requestMatchers("/api/login").permitAll()
+
+                // ⬇️ Aquí si querés que toda la API sea pública, sino podés ajustar
+                .requestMatchers("/api/**").permitAll()
+
+                // Rutas protegidas por roles
+                .requestMatchers("/empleado/**").hasRole("EMPLEADO")
+                .requestMatchers("/turnos/**", "/mis-turnos").hasRole("PACIENTE")
+                .requestMatchers("/paciente/**").hasRole("PACIENTE")
+
+                .anyRequest().authenticated()
+            )
             .formLogin(form -> form
                 .loginPage("/login")
                 .loginProcessingUrl("/login")
@@ -55,7 +60,6 @@ public class SecurityConfig {
                 .successHandler(authenticationSuccessHandler())
                 .permitAll()
             )
-            // Configuración de logout
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
@@ -77,12 +81,10 @@ public class SecurityConfig {
             boolean isPaciente = authentication.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("ROLE_PACIENTE"));
             if (isPaciente) {
-                // La “home” de paciente es /home.
                 response.sendRedirect(request.getContextPath() + "/home");
                 return;
             }
 
-            // Por defecto, redirige a /home si el usuario no es ni EMPLEADO ni PACIENTE
             response.sendRedirect(request.getContextPath() + "/home");
         };
     }
@@ -91,4 +93,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    
 }
