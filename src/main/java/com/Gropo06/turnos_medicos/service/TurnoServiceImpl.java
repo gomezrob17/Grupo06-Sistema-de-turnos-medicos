@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import com.Gropo06.turnos_medicos.exceptions.CustomException;
+import com.Gropo06.turnos_medicos.exceptions.TurnoInvalido;
 import com.Gropo06.turnos_medicos.model.EstadoTurno;
 import com.Gropo06.turnos_medicos.model.Paciente;
 import com.Gropo06.turnos_medicos.model.Turno;
@@ -32,7 +32,7 @@ public class TurnoServiceImpl implements TurnoService {
     @Override
     public void cancelarTurno(Long idTurno) {
         Turno turno = turnoRepository.findById(idTurno)
-                .orElseThrow(() -> new CustomException("Turno no encontrado"));
+                .orElseThrow(() -> new TurnoInvalido("Turno no encontrado"));
 
         EstadoTurno cancelado = estadoTurnoService.obtenerEstadoCancelado();
 

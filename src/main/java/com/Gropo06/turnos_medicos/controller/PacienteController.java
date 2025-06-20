@@ -1,6 +1,5 @@
 package com.Gropo06.turnos_medicos.controller;
 
-import com.Gropo06.turnos_medicos.exceptions.CustomException;
 import com.Gropo06.turnos_medicos.exceptions.EspecialidadInvalida;
 import com.Gropo06.turnos_medicos.exceptions.SucursalInvalida;
 import com.Gropo06.turnos_medicos.model.Disponibilidad;

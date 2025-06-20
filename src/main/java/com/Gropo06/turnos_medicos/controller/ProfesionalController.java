@@ -1,6 +1,5 @@
 package com.Gropo06.turnos_medicos.controller;
 
-import com.Gropo06.turnos_medicos.exceptions.CustomException;
 import com.Gropo06.turnos_medicos.exceptions.EmailExistente;
 import com.Gropo06.turnos_medicos.exceptions.EspecialidadInvalida;
 import com.Gropo06.turnos_medicos.exceptions.ProfesionalInvalido;
@@ -176,7 +175,7 @@ public class ProfesionalController {
         if (listaDispDelFormulario != null) {
             String solapamientoMensaje = validarSinSolapamientos(listaDispDelFormulario);
             if (solapamientoMensaje != null) {
-                throw new CustomException(solapamientoMensaje);
+                throw new RuntimeException(solapamientoMensaje);
             }
 
             for (Disponibilidad dForm : listaDispDelFormulario) {

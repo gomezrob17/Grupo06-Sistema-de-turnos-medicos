@@ -2,7 +2,12 @@ package com.Gropo06.turnos_medicos.controller;
 
 import com.Gropo06.turnos_medicos.dto.FiltroTurnoDTO;
 import com.Gropo06.turnos_medicos.dto.SlotDTO;
-import com.Gropo06.turnos_medicos.exceptions.CustomException;
+import com.Gropo06.turnos_medicos.exceptions.EspecialidadInvalida;
+import com.Gropo06.turnos_medicos.exceptions.EstadoTurnoInvalido;
+import com.Gropo06.turnos_medicos.exceptions.PacienteInvalido;
+import com.Gropo06.turnos_medicos.exceptions.ProfesionalInvalido;
+import com.Gropo06.turnos_medicos.exceptions.SucursalInvalida;
+import com.Gropo06.turnos_medicos.exceptions.TurnoInvalido;
 import com.Gropo06.turnos_medicos.model.Agenda;
 import com.Gropo06.turnos_medicos.model.Disponibilidad;
 import com.Gropo06.turnos_medicos.model.Especialidad;
@@ -109,9 +114,9 @@ public class TurnoController {
 
         // 1) Valido y recupero Especialidad y Sucursal
         Especialidad espElegida = espRepo.findById(idEsp)
-                .orElseThrow(() -> new CustomException("Especialidad inválida Id: " + idEsp));
+                .orElseThrow(() -> new EspecialidadInvalida("Especialidad inválida Id: " + idEsp));
         Sucursal sucElegida = sucRepo.findById(idSuc)
-                .orElseThrow(() -> new CustomException("Sucursal inválida Id: " + idSuc));
+                .orElseThrow(() -> new SucursalInvalida("Sucursal inválida Id: " + idSuc));
 
         // 2) Busco en Disponibilidad todas las filas que coincidan:
         //    - Profesional con espElegida
@@ -218,9 +223,9 @@ public class TurnoController {
 
         // 4) Recupero entidades completas
         Especialidad espElegida = espRepo.findById(filtro.getIdEspecialidad())
-                .orElseThrow(() -> new CustomException("Especialidad inválida"));
+                .orElseThrow(() -> new EspecialidadInvalida("Especialidad inválida"));
         Sucursal sucElegida = sucRepo.findById(filtro.getIdSucursal())
-                .orElseThrow(() -> new CustomException("Sucursal inválida"));
+                .orElseThrow(() -> new SucursalInvalida("Sucursal inválida"));
 
         LocalDate desde = filtro.getFechaDesde();
         LocalDate hasta = filtro.getFechaHasta();
@@ -297,7 +302,7 @@ public class TurnoController {
             // 1) Recupero el paciente logueado por email (contacto.email)
             String emailUsuario = principal.getName();
             Paciente paciente = pacienteRepo.findByContactoEmail(emailUsuario)
-                    .orElseThrow(() -> new IllegalArgumentException("Paciente no encontrado"));
+                    .orElseThrow(() -> new PacienteInvalido("Paciente no encontrado"));
 
             // 2) Convierto Strings a LocalDate / LocalTime
             LocalDate fecha = LocalDate.parse(fechaStr);
@@ -305,11 +310,11 @@ public class TurnoController {
 
             // 3) Busco Profesional, Especialidad y Sucursal
             Profesional profesional = profRepo.findById(idProf)
-                    .orElseThrow(() -> new IllegalArgumentException("Profesional inválido"));
+                    .orElseThrow(() -> new ProfesionalInvalido("Profesional inválido"));
             Especialidad especialidad = espRepo.findById(idEsp)
-                    .orElseThrow(() -> new IllegalArgumentException("Especialidad inválida"));
+                    .orElseThrow(() -> new EspecialidadInvalida("Especialidad inválida"));
             Sucursal sucursal = sucRepo.findById(idSuc)
-                    .orElseThrow(() -> new IllegalArgumentException("Sucursal inválida"));
+                    .orElseThrow(() -> new SucursalInvalida("Sucursal inválida"));
 
             // 4) Obtengo (o creo) la Agenda para (fecha, sucursal, especialidad)
             Optional<Agenda> opAg = agendaRepo.findByDiaAndSucursalAndTipoEspecialidad(fecha, sucursal, especialidad);
@@ -341,7 +346,7 @@ public class TurnoController {
             nuevoTurno.setProfesional(profesional);
 
             EstadoTurno estadoPendiente = estadoRepo.findById(1L)
-                    .orElseThrow(() -> new IllegalArgumentException("EstadoTurno no encontrado"));
+                    .orElseThrow(() -> new EstadoTurnoInvalido("EstadoTurno no encontrado"));
             nuevoTurno.setEstado(estadoPendiente);
 
             nuevoTurno.setAgenda(agenda);
@@ -382,7 +387,7 @@ public class TurnoController {
         String email = principal.getName();
         Paciente paciente = pacienteRepo
                 .findByContactoEmail(email)
-                .orElseThrow(() -> new CustomException("Paciente no encontrado"));
+                .orElseThrow(() -> new PacienteInvalido("Paciente no encontrado"));
 
         // 2) Busco todos los turnos de ese paciente
         List<Turno> misTurnos = turnoRepo.findByPaciente(paciente);
@@ -398,10 +403,10 @@ public class TurnoController {
     @PostMapping("/turnos/cancelar")
     public String cancelarTurno(@RequestParam("idTurno") Long idTurno) {
         Turno turno = turnoRepo.findById(idTurno)
-                .orElseThrow(() -> new CustomException("Turno no encontrado"));
+                .orElseThrow(() -> new TurnoInvalido("Turno no encontrado"));
 
             if (turno.getEstado().getNombre().equalsIgnoreCase("Cancelado")) {
-                throw new CustomException("El turno ya está cancelado");
+                throw new TurnoInvalido("El turno ya está cancelado");
             }
         turnoService.cancelarTurno(idTurno);
         return "redirect:/mis-turnos";

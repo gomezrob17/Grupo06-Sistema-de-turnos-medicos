@@ -14,6 +14,12 @@ public class GlobalExceptionHandler{
         return "error/surgioError";
     }
     
+    @ExceptionHandler(RuntimeException.class)
+    public String manejarRuntimeException(RuntimeException ex, Model model) {
+        model.addAttribute("mensaje", ex.getMessage());
+        return "error/surgioError";
+    }
+    
     @ExceptionHandler(SucursalInvalida.class)
     public String manejarSucursalInvalida(SucursalInvalida ex, Model model) {
         model.addAttribute("mensaje", ex.getMessage());
@@ -58,6 +64,24 @@ public class GlobalExceptionHandler{
     
     @ExceptionHandler(TurnoYaAsignado.class)
     public String manejarTurnoYaAsignado(TurnoYaAsignado ex, Model model) {
+        model.addAttribute("mensaje", ex.getMessage());
+        return "error/surgioError";
+    }
+    
+    @ExceptionHandler(TurnoInvalido.class)
+    public String manejarTurnoInvalido(TurnoInvalido ex, Model model) {
+        model.addAttribute("mensaje", ex.getMessage());
+        return "error/surgioError";
+    }
+    
+    @ExceptionHandler(EstadoTurnoInvalido.class)
+    public String manejarEstadoTurnoInvalido(EstadoTurnoInvalido ex, Model model) {
+        model.addAttribute("mensaje", ex.getMessage());
+        return "error/surgioError";
+    }
+    
+    @ExceptionHandler(PacienteInvalido.class)
+    public String manejarPacienteInvalido(PacienteInvalido ex, Model model) {
         model.addAttribute("mensaje", ex.getMessage());
         return "error/surgioError";
     }
