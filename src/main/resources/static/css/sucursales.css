@@ -1,0 +1,75 @@
+:root {
+			--primary: #297B8E;
+			--secondary: #6FBB90;
+			--dark-bg: #2d3033;
+			--light-bg: #f8f8f8;
+			--white: #fff;
+		}
+
+		body {
+			margin: 0;
+			font-family: 'Roboto', sans-serif;
+			background: var(--light-bg);
+		}
+
+		.sidebar {
+			width: 220px;
+			min-height: 100vh;
+			background: var(--dark-bg);
+			color: #cfd8dc;
+		}
+
+		.sidebar .logo {
+			text-align: center;
+			padding: 1rem 0;
+		}
+
+		.sidebar .logo img {
+			max-height: 50px;
+		}
+
+		.sidebar .logo h5 {
+			color: var(--white);
+			margin-top: 0.5rem;
+			font-weight: bold;
+		}
+
+		.sidebar .nav-link {
+			color: #cfd8dc;
+		}
+
+		.sidebar .nav-link.active,
+		.sidebar .nav-link:hover {
+			background: #424549;
+			color: var(--white);
+		}
+
+		.main {
+			flex-grow: 1;
+			padding: 1.5rem;
+		}
+
+		.main h2 {
+			color: var(--primary);
+			margin-bottom: 1rem;
+		}
+
+		.btn-add {
+			background: var(--secondary);
+			border: none;
+			color: var(--white);
+		}
+
+		.table thead {
+			background: var(--primary);
+			color: var(--white);
+		}
+
+		.table tbody tr:hover {
+			background: rgba(41, 123, 142, 0.1);
+		}
+
+		.card-header {
+			background: var(--primary);
+			color: var(--white);
+		}

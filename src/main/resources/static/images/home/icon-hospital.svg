@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="45.422" height="45.713" viewBox="0 0 45.422 45.713">
+  <defs>
+    <clipPath id="clip">
+      <use xlink:href="#fill"/>
+    </clipPath>
+  </defs>
+  <g id="Hospital_Británico_Home" data-name="Hospital Británico Home" transform="translate(15292.57 333)">
+    <rect id="Rectángulo_150085" data-name="Rectángulo 150085" width="38.694" height="24.506" transform="translate(-15288.99 -312.793)" fill="#fff" stroke="#05294f" stroke-width="2"/>
+    <g id="Rectángulo_150084" data-name="Rectángulo 150084" transform="translate(-15292 -315.803)" fill="#fff" stroke="#05294f" stroke-width="2">
+      <rect width="43.853" height="6.019" rx="3" stroke="none"/>
+      <rect x="1" y="1" width="41.853" height="4.019" rx="2" fill="none"/>
+    </g>
+    <g id="Rectángulo_150092" data-name="Rectángulo 150092" transform="translate(-15289.421 -296.026)" fill="#fff" stroke="#05294f" stroke-width="2">
+      <rect id="fill" width="39.553" height="1.72" rx="0.86" stroke="none"/>
+      <path d="M0,0.7197171449661255h39.55349349975586M38.55349349975586,0v1.7197171449661255M39.55349349975586,1h-39.55349349975586M1,1.7197171449661255v-1.7197171449661255" fill="none" clip-path="url(#clip)"/>
+    </g>
+    <rect id="Rectángulo_150083" data-name="Rectángulo 150083" width="22.356" height="39.553" transform="translate(-15281.252 -327.841)" fill="#fff" stroke="#05294f" stroke-width="2"/>
+    <path id="Trazado_98397" data-name="Trazado 98397" d="M-15232.571-280.047h43.422" transform="translate(-58.999 -8.281)" fill="none" stroke="#05294f" stroke-linecap="round" stroke-width="2"/>
+    <g id="Rectángulo_150082" data-name="Rectángulo 150082" transform="translate(-15285.121 -333)" fill="#fff" stroke="#05294f" stroke-width="2">
+      <rect width="30.095" height="6.019" rx="3" stroke="none"/>
+      <rect x="1" y="1" width="28.095" height="4.019" rx="2" fill="none"/>
+    </g>
+    <path id="Trazado_98398" data-name="Trazado 98398" d="M-15278.993-309.5h23.217" transform="translate(-2.259 -3.293)" fill="none" stroke="#05294f" stroke-width="2"/>
+    <rect id="Rectángulo_150086" data-name="Rectángulo 150086" width="12.038" height="11.178" transform="translate(-15276.093 -299.466)" fill="#fff" stroke="#05294f" stroke-width="2"/>
+    <path id="Trazado_98399" data-name="Trazado 98399" d="M-15266-299.642v11.286" transform="translate(-4.074 -0.079)" fill="none" stroke="#05294f" stroke-width="2"/>
+    <path id="Unión_1" data-name="Unión 1" d="M2.866,8.6V5.732H0V2.866H2.866V0H5.732V2.866H8.6V5.732H5.732V8.6Z" transform="translate(-15274.373 -324.831)" fill="#fff" stroke="#05294f" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+    <g id="Grupo_165894" data-name="Grupo 165894" transform="translate(-15278.672 -308.064)">
+      <rect id="Rectángulo_150089" data-name="Rectángulo 150089" width="3.566" height="3.566" rx="0.2" fill="#fff" stroke="#05294f" stroke-linejoin="round" stroke-width="2"/>
+      <rect id="Rectángulo_150090" data-name="Rectángulo 150090" width="3.566" height="3.566" rx="0.2" transform="translate(6.879)" fill="#fff" stroke="#05294f" stroke-linejoin="round" stroke-width="2"/>
+      <rect id="Rectángulo_150091" data-name="Rectángulo 150091" width="3.566" height="3.566" rx="0.2" transform="translate(13.758)" fill="#fff" stroke="#05294f" stroke-linejoin="round" stroke-width="2"/>
+    </g>
+  </g>
+</svg>

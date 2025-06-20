@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Hospital Vida Nova - Iniciar Sesión</title>
+	<link rel="stylesheet" th:href="@{/css/login.css}" />
+</head>
+
+<body>
+	<div class="container">
+		<div class="login-section">
+			<img th:src="@{/images/login/logo_oficial_vida_nova.png}" alt="Logo Hospital Vida Nova" class="logo" />
+			<h2 class="title">Iniciar Sesión</h2>
+
+			<div th:if="${param.error}" class="alert alert-danger" style="color: #a94442; margin-bottom: 1rem;">
+				Credenciales inválidas. Por favor, verificá tu email y contraseña.
+			</div>
+			<div th:if="${param.logout}" class="alert alert-success" style="color: #3c763d; margin-bottom: 1rem;">
+				Has cerrado sesión correctamente.
+			</div>
+
+			<form th:action="@{/login}" method="post">
+				<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+				<input type="email" name="email" placeholder="E-mail" required autofocus />
+
+				<div class="password-wrapper">
+					<input type="password" name="password" placeholder="Contraseña" required />
+				</div>
+
+				<button type="submit" class="btn-primary">Continuar</button>
+				<button type="button" class="btn-secondary" th:onclick="|window.location='@{/register}'|">
+					Registrarse
+				</button>
+				<a href="#" class="forgot">¿Olvidaste tu contraseña?</a>
+			</form>
+		</div>
+
+		<div class="image-section">
+			<div class="overlay">
+				<h1>Bienvenido a Vida Nova Online</h1>
+				<p>Agendá tus turnos, accedé a tus resultados y gestioná tu grupo familiar desde nuestro portal</p>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>
