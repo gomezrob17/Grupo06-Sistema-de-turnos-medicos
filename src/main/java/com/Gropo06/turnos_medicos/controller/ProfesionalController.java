@@ -1,6 +1,12 @@
 package com.Gropo06.turnos_medicos.controller;
 
 import com.Gropo06.turnos_medicos.exceptions.CustomException;
+import com.Gropo06.turnos_medicos.exceptions.EmailExistente;
+import com.Gropo06.turnos_medicos.exceptions.EspecialidadInvalida;
+import com.Gropo06.turnos_medicos.exceptions.ProfesionalInvalido;
+import com.Gropo06.turnos_medicos.exceptions.RolNoEncontrado;
+import com.Gropo06.turnos_medicos.exceptions.SucursalInvalida;
+import com.Gropo06.turnos_medicos.exceptions.TurnoYaAsignado;
 import com.Gropo06.turnos_medicos.model.Contacto;
 import com.Gropo06.turnos_medicos.model.Disponibilidad;
 import com.Gropo06.turnos_medicos.model.Especialidad;
@@ -30,288 +36,223 @@ import java.util.stream.Collectors;
 @RequestMapping("/empleado/profesionales")
 public class ProfesionalController {
 
-	private final ProfesionalRepository profesionalRepo;
-	private final EspecialidadRepository especialidadRepo;
-	private final SucursalRepository sucursalRepo;
-	private final RolRepository rolRepo;
-	private final ContactoRepository contactoRepo;
-	private final PasswordEncoder passwordEncoder;
-	
-	@Autowired
-	private TurnoRepository turnoRepo;
+    private final ProfesionalRepository profesionalRepo;
+    private final EspecialidadRepository especialidadRepo;
+    private final SucursalRepository sucursalRepo;
+    private final RolRepository rolRepo;
+    private final ContactoRepository contactoRepo;
+    private final PasswordEncoder passwordEncoder;
 
-	public ProfesionalController(ProfesionalRepository profesionalRepo, EspecialidadRepository especialidadRepo,
-			SucursalRepository sucursalRepo, RolRepository rolRepo, ContactoRepository contactoRepo,
-			PasswordEncoder passwordEncoder) {
-		this.profesionalRepo = profesionalRepo;
-		this.especialidadRepo = especialidadRepo;
-		this.sucursalRepo = sucursalRepo;
-		this.rolRepo = rolRepo;
-		this.contactoRepo = contactoRepo;
-		this.passwordEncoder = passwordEncoder;
-	}
+    @Autowired
+    private TurnoRepository turnoRepo;
 
-	// Muestra la lista de profesionales + formulario (vacio) para crear uno nuevo.
-	// Además se carga la lista con todas las Especialidades y Sucursales para los
-	// select.
+    public ProfesionalController(ProfesionalRepository profesionalRepo, EspecialidadRepository especialidadRepo,
+                                 SucursalRepository sucursalRepo, RolRepository rolRepo,
+                                 ContactoRepository contactoRepo, PasswordEncoder passwordEncoder) {
+        this.profesionalRepo = profesionalRepo;
+        this.especialidadRepo = especialidadRepo;
+        this.sucursalRepo = sucursalRepo;
+        this.rolRepo = rolRepo;
+        this.contactoRepo = contactoRepo;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-	@GetMapping
-	public String listarProfesionales(Model model) {
-		List<Profesional> lista = profesionalRepo.findAll();
-		model.addAttribute("profesionales", lista);
+    // Muestra la lista de profesionales + formulario vacío para crear uno nuevo.
+    @GetMapping
+    public String listarProfesionales(Model model) {
+        model.addAttribute("profesionales", profesionalRepo.findAll());
+        model.addAttribute("profesionalForm", new Profesional());
+        model.addAttribute("especialidadesList", especialidadRepo.findAll());
+        model.addAttribute("sucursalesList", sucursalRepo.findAll());
+        return "empleado/profesionales";
+    }
 
-		model.addAttribute("profesionalForm", new Profesional());
+    // Guardar Profesional (nuevo o edición)
+    @PostMapping("/save")
+    public String guardarProfesional(@ModelAttribute("profesionalForm") Profesional profForm,
+                                     @RequestParam("email") String email,
+                                     @RequestParam("telefono") String telefono,
+                                     @RequestParam("idEspecialidad") Long idEsp,
+                                     @RequestParam("sucursalesSeleccionadas") List<Long> sucursalesIds,
+                                     Model model) {
 
-		List<Especialidad> especialidades = especialidadRepo.findAll();
-		model.addAttribute("especialidadesList", especialidades);
+        // Validación de edad
+        LocalDate fechaNacimiento = profForm.getFechaNacimiento();
+        LocalDate hoy = LocalDate.now();
 
-		List<Sucursal> sucursales = sucursalRepo.findAll();
-		model.addAttribute("sucursalesList", sucursales);
+        if (fechaNacimiento == null) {
+            model.addAttribute("errorFecha", "La fecha de nacimiento es obligatoria.");
+            return recargarVista(model, profForm);
+        }
 
-		return "empleado/profesionales";
-	}
+        if (fechaNacimiento.isAfter(hoy)) {
+            model.addAttribute("errorFecha", "La fecha de nacimiento no puede ser futura.");
+            return recargarVista(model, profForm);
+        }
 
-	// Guardar Profesional o actualizar uno existente.
-	// En el form se incluyen los datos de contacto (email, teléfono) y, si es una
-	// nueva creación asignamos el rol “PROFESIONAL” y generamos una contraseña por
-	// defecto.
+        if (fechaNacimiento.isAfter(hoy.minusYears(18))) {
+            model.addAttribute("errorFecha", "El profesional debe ser mayor de 18 años.");
+            return recargarVista(model, profForm);
+        }
 
-	@PostMapping("/save")
-	public String guardarProfesional(@ModelAttribute("profesionalForm") Profesional profForm,
-	                                @RequestParam("email") String email, 
-	                                @RequestParam("telefono") String telefono,
-	                                @RequestParam("idEspecialidad") Long idEsp,
-	                                @RequestParam("sucursalesSeleccionadas") List<Long> sucursalesIds,
-	                                Model model) {
-	    
-	    // Validación fecha de nacimiento
-	    LocalDate fechaNacimiento = profForm.getFechaNacimiento();
-	    LocalDate hoy = LocalDate.now();
+        Profesional prof;
+        boolean esEdicion = profForm.getIdUsuario() != null;
 
-	    if (fechaNacimiento == null) {
-	        model.addAttribute("errorFecha", "La fecha de nacimiento es obligatoria.");
-	        model.addAttribute("profesionales", profesionalRepo.findAll());
-	        model.addAttribute("especialidadesList", especialidadRepo.findAll());
-	        model.addAttribute("sucursalesList", sucursalRepo.findAll());
-	        model.addAttribute("profesionalForm", profForm);
-	        return "empleado/profesionales";
-	    }
+        if (esEdicion) {
+            // Edición
+            prof = profesionalRepo.findByIdWithDisponibilidades(profForm.getIdUsuario())
+                    .orElseThrow(() -> new ProfesionalInvalido("Profesional inválido Id: " + profForm.getIdUsuario()));
 
-	    if (fechaNacimiento.isAfter(hoy)) {
-	        model.addAttribute("errorFecha", "La fecha de nacimiento no puede ser futura.");
-	        model.addAttribute("profesionales", profesionalRepo.findAll());
-	        model.addAttribute("especialidadesList", especialidadRepo.findAll());
-	        model.addAttribute("sucursalesList", sucursalRepo.findAll());
-	        model.addAttribute("profesionalForm", profForm);
-	        return "empleado/profesionales";
-	    }
+            prof.setNombre(profForm.getNombre());
+            prof.setApellido(profForm.getApellido());
+            prof.setDni(profForm.getDni());
+            prof.setFechaNacimiento(fechaNacimiento);
+            prof.setGenero(profForm.getGenero());
+            prof.setMatricula(profForm.getMatricula());
 
-	    if (fechaNacimiento.isAfter(hoy.minusYears(18))) {
-	        model.addAttribute("errorFecha", "El profesional debe ser mayor de 18 años.");
-	        model.addAttribute("profesionales", profesionalRepo.findAll());
-	        model.addAttribute("especialidadesList", especialidadRepo.findAll());
-	        model.addAttribute("sucursalesList", sucursalRepo.findAll());
-	        model.addAttribute("profesionalForm", profForm);
-	        return "empleado/profesionales";
-	    }
+            Contacto contactoExistente = prof.getContacto();
+            contactoExistente.setEmail(email);
+            contactoExistente.setTelefono(telefono);
+            contactoRepo.save(contactoExistente);
 
-	    Profesional prof;
-	    boolean esEdicion = profForm.getIdUsuario() != null;
+            Especialidad esp = especialidadRepo.findById(idEsp)
+                    .orElseThrow(() -> new EspecialidadInvalida("Especialidad inválida Id: " + idEsp));
+            prof.setEspecialidad(esp);
 
-	    if (esEdicion) {
-	        prof = profesionalRepo.findByIdWithDisponibilidades(profForm.getIdUsuario()).orElseThrow(
-	                () -> new CustomException("Profesional inválido Id: " + profForm.getIdUsuario()));
+            Set<Sucursal> sucursalesSet = sucursalesIds.stream()
+                    .map(id -> sucursalRepo.findById(id)
+                            .orElseThrow(() -> new SucursalInvalida("Sucursal inválida Id: " + id)))
+                    .collect(Collectors.toSet());
+            prof.setSucursales(sucursalesSet);
 
-	        // Actualizamos campos especificos del usuario Profesional
-	        prof.setNombre(profForm.getNombre());
-	        prof.setApellido(profForm.getApellido());
-	        prof.setDni(profForm.getDni());
-	        prof.setFechaNacimiento(profForm.getFechaNacimiento());
-	        prof.setGenero(profForm.getGenero());
-	        prof.setMatricula(profForm.getMatricula());
+            prof.getDisponibilidades().clear();
+            procesarDisponibilidades(prof, profForm.getDisponibilidades());
 
-	        // Actualizamos Contacto
-	        Contacto contactoExistente = prof.getContacto();
-	        contactoExistente.setEmail(email);
-	        contactoExistente.setTelefono(telefono);
-	        contactoRepo.save(contactoExistente);
+            profesionalRepo.save(prof);
 
-	        // Actualizamos Especialidad
-	        Especialidad esp = especialidadRepo.findById(idEsp)
-	                .orElseThrow(() -> new CustomException("Especialidad inválida Id: " + idEsp));
-	        prof.setEspecialidad(esp);
+        } else {
+            // Nuevo profesional
+            prof = new Profesional();
+            prof.setNombre(profForm.getNombre());
+            prof.setApellido(profForm.getApellido());
+            prof.setDni(profForm.getDni());
+            prof.setFechaNacimiento(fechaNacimiento);
+            prof.setGenero(profForm.getGenero());
+            prof.setMatricula(profForm.getMatricula());
 
-	        // Actualizamos Sucursales
-	        Set<Sucursal> sucursalesSet = sucursalesIds.stream()
-	                .map(id -> sucursalRepo.findById(id)
-	                        .orElseThrow(() -> new CustomException("Sucursal inválida Id: " + id)))
-	                .collect(Collectors.toSet());
-	        prof.setSucursales(sucursalesSet);
+            Contacto nuevoContacto = new Contacto(email, telefono);
+            if (contactoRepo.existsByEmail(nuevoContacto.getEmail())) {
+                throw new EmailExistente("Email ya existente");
+            }
+            contactoRepo.save(nuevoContacto);
+            prof.setContacto(nuevoContacto);
 
-	        // Gestión de Disponibilidades
-	        prof.getDisponibilidades().clear();
+            Rol rolProfesional = rolRepo.findByNombre("PROFESIONAL")
+                    .orElseThrow(() -> new RolNoEncontrado("Rol PROFESIONAL no encontrado"));
+            prof.setRol(rolProfesional);
 
-	        List<Disponibilidad> listaDispDelFormulario = profForm.getDisponibilidades();
-	        if (listaDispDelFormulario != null) {
+            prof.setPassword(passwordEncoder.encode(profForm.getMatricula()));
 
-	            String solapamientoMensaje = validarSinSolapamientos(listaDispDelFormulario);
-	            if (solapamientoMensaje != null) {
+            Especialidad espNueva = especialidadRepo.findById(idEsp)
+                    .orElseThrow(() -> new EspecialidadInvalida("Especialidad inválida Id: " + idEsp));
+            prof.setEspecialidad(espNueva);
 
-	                model.addAttribute("errorDisp", solapamientoMensaje);
+            Set<Sucursal> sucursalesSet = sucursalesIds.stream()
+                    .map(id -> sucursalRepo.findById(id)
+                            .orElseThrow(() -> new SucursalInvalida("Sucursal inválida Id: " + id)))
+                    .collect(Collectors.toSet());
+            prof.setSucursales(sucursalesSet);
 
-	                model.addAttribute("profesionales", profesionalRepo.findAll());
-	                model.addAttribute("especialidadesList", especialidadRepo.findAll());
-	                model.addAttribute("sucursalesList", sucursalRepo.findAll());
-	                model.addAttribute("profesionalForm", profForm);
+            procesarDisponibilidades(prof, profForm.getDisponibilidades());
 
-	                return "empleado/profesionales";
-	            }
+            profesionalRepo.save(prof);
+        }
 
-	            for (Disponibilidad dForm : listaDispDelFormulario) {
+        return "redirect:/empleado/profesionales";
+    }
 
-	                Sucursal suc = sucursalRepo.findById(dForm.getSucursal().getIdSucursal())
-	                        .orElseThrow(() -> new CustomException(
-	                                "Sucursal inválida Id: " + dForm.getSucursal().getIdSucursal()));
-	                dForm.setSucursal(suc);
+    // Procesa lista de disponibilidades (nuevas o editadas)
+    private void procesarDisponibilidades(Profesional prof, List<Disponibilidad> listaDispDelFormulario) {
+        if (listaDispDelFormulario != null) {
+            String solapamientoMensaje = validarSinSolapamientos(listaDispDelFormulario);
+            if (solapamientoMensaje != null) {
+                throw new CustomException(solapamientoMensaje);
+            }
 
-	                dForm.setProfesional(prof);
-	                prof.getDisponibilidades().add(dForm);
-	            }
-	        }
+            for (Disponibilidad dForm : listaDispDelFormulario) {
+                Sucursal suc = sucursalRepo.findById(dForm.getSucursal().getIdSucursal())
+                        .orElseThrow(() -> new SucursalInvalida("Sucursal inválida Id: " + dForm.getSucursal().getIdSucursal()));
+                dForm.setSucursal(suc);
+                dForm.setProfesional(prof);
+                prof.getDisponibilidades().add(dForm);
+            }
+        }
+    }
 
-	        profesionalRepo.save(prof);
+    // Valida que no haya solapamientos entre disponibilidades
+    private String validarSinSolapamientos(List<Disponibilidad> listaDisp) {
+        listaDisp.sort((a, b) -> {
+            int cmp = a.getFecha().compareTo(b.getFecha());
+            if (cmp != 0)
+                return cmp;
+            return a.getHoraInicio().compareTo(b.getHoraInicio());
+        });
 
-	    } else {
-	        // Nuevo Profesional
-	        prof = new Profesional();
-	        prof.setNombre(profForm.getNombre());
-	        prof.setApellido(profForm.getApellido());
-	        prof.setDni(profForm.getDni());
-	        prof.setFechaNacimiento(profForm.getFechaNacimiento());
-	        prof.setGenero(profForm.getGenero());
-	        prof.setMatricula(profForm.getMatricula());
+        for (int i = 0; i < listaDisp.size(); i++) {
+            Disponibilidad d1 = listaDisp.get(i);
+            for (int j = i + 1; j < listaDisp.size(); j++) {
+                Disponibilidad d2 = listaDisp.get(j);
 
-	        // Nuevo Contacto
-	        Contacto nuevoContacto = new Contacto(email, telefono);
-	        if (contactoRepo.existsByEmail(nuevoContacto.getEmail())) {
-	            throw new CustomException("Email ya existente");
-	        }
-	        contactoRepo.save(nuevoContacto);
-	        prof.setContacto(nuevoContacto);
+                if (!d1.getFecha().equals(d2.getFecha())) {
+                    break;
+                }
 
-	        // Rol PROFESIONAL
-	        Rol rolProfesional = rolRepo.findByNombre("PROFESIONAL")
-	                .orElseThrow(() -> new CustomException("Rol PROFESIONAL no encontrado"));
-	        prof.setRol(rolProfesional);
+                if (!(d1.getHoraFin().isBefore(d2.getHoraInicio()) || d2.getHoraFin().isBefore(d1.getHoraInicio()))) {
+                    return String.format("Conflicto: para el día %s, el horario %s–%s se superpone con %s–%s",
+                            d1.getFecha(), d1.getHoraInicio(), d1.getHoraFin(), d2.getHoraInicio(), d2.getHoraFin());
+                }
+            }
+        }
+        return null;
+    }
 
-	        // Contraseña por defecto (por ejemplo matrícula)
-	        String rawPass = profForm.getMatricula();
-	        prof.setPassword(passwordEncoder.encode(rawPass));
+    // Carga formulario de edición
+    @GetMapping("/edit/{id}")
+    public String editarProfesional(@PathVariable("id") Long id, Model model) {
+        Profesional prof = profesionalRepo.findByIdWithDisponibilidades(id)
+                .orElseThrow(() -> new ProfesionalInvalido("Profesional inválido Id: " + id));
 
-	        // Asociar Especialidad
-	        Especialidad espNueva = especialidadRepo.findById(idEsp)
-	                .orElseThrow(() -> new CustomException("Especialidad inválida Id: " + idEsp));
-	        prof.setEspecialidad(espNueva);
+        if (prof.getDisponibilidades() == null) {
+            prof.setDisponibilidades(new ArrayList<>());
+        }
 
-	        // Asociar Sucursales
-	        Set<Sucursal> sucursalesSet = sucursalesIds.stream()
-	                .map(id -> sucursalRepo.findById(id)
-	                        .orElseThrow(() -> new CustomException("Sucursal inválida Id: " + id)))
-	                .collect(Collectors.toSet());
-	        prof.setSucursales(sucursalesSet);
+        // Lazy initialization de sucursales
+        prof.getSucursales().size();
 
-	        // Manejo de nuevas Disponibilidades
-	        List<Disponibilidad> listaDispDelFormulario = profForm.getDisponibilidades();
-	        if (listaDispDelFormulario != null) {
-	            String solapamientoMensaje = validarSinSolapamientos(listaDispDelFormulario);
-	            if (solapamientoMensaje != null) {
-	                model.addAttribute("errorDisp", solapamientoMensaje);
-	                model.addAttribute("profesionales", profesionalRepo.findAll());
-	                model.addAttribute("especialidadesList", especialidadRepo.findAll());
-	                model.addAttribute("sucursalesList", sucursalRepo.findAll());
-	                model.addAttribute("profesionalForm", profForm);
-	                return "empleado/profesionales";
-	            }
+        model.addAttribute("profesionalForm", prof);
+        model.addAttribute("profesionales", profesionalRepo.findAll());
+        model.addAttribute("especialidadesList", especialidadRepo.findAll());
+        model.addAttribute("sucursalesList", sucursalRepo.findAll());
 
-	            for (Disponibilidad dForm : listaDispDelFormulario) {
-	                Sucursal suc = sucursalRepo.findById(dForm.getSucursal().getIdSucursal())
-	                        .orElseThrow(() -> new CustomException(
-	                                "Sucursal inválida Id: " + dForm.getSucursal().getIdSucursal()));
-	                dForm.setSucursal(suc);
-	                dForm.setProfesional(prof);
-	                prof.getDisponibilidades().add(dForm);
-	            }
-	        }
+        return "empleado/profesionales";
+    }
 
-	        profesionalRepo.save(prof);
-	    }
+    // Eliminar profesional
+    @GetMapping("/delete/{id}")
+    public String eliminarProfesional(@PathVariable("id") Long id) {
+        if (turnoRepo.existsByProfesional_IdUsuario(id)) {
+            throw new TurnoYaAsignado("El profesional posee Turnos asignados.");
+        }
+        profesionalRepo.deleteById(id);
+        return "redirect:/empleado/profesionales";
+    }
 
-	    return "redirect:/empleado/profesionales";
-	}
-
-	// Recorre la lista de Disponibilidades y devuelve null si no existen solapamientos.
-	// En caso de encontrar fecha y horarios iguales que se superponen, devuelve el
-	// mensaje de error con detalle
-
-	private String validarSinSolapamientos(List<Disponibilidad> listaDisp) {
-
-		listaDisp.sort((a, b) -> {
-			int cmp = a.getFecha().compareTo(b.getFecha());
-			if (cmp != 0)
-				return cmp;
-			return a.getHoraInicio().compareTo(b.getHoraInicio());
-		});
-
-		for (int i = 0; i < listaDisp.size(); i++) {
-			Disponibilidad d1 = listaDisp.get(i);
-			for (int j = i + 1; j < listaDisp.size(); j++) {
-				Disponibilidad d2 = listaDisp.get(j);
-
-				if (!d1.getFecha().equals(d2.getFecha())) {
-					break;
-				}
-
-				if (!(d1.getHoraFin().isBefore(d2.getHoraInicio()) || d2.getHoraFin().isBefore(d1.getHoraInicio()))) {
-
-					return String.format("Conflicto: para el día %s, el horario %s–%s\n   se superpone con %s–%s",
-							d1.getFecha(), d1.getHoraInicio(), d1.getHoraFin(), d2.getHoraInicio(), d2.getHoraFin());
-				}
-			}
-		}
-		return null;
-	}
-
-	@GetMapping("/edit/{id}")
-	public String editarProfesional(@PathVariable("id") Long id, Model model) {
-		Profesional prof = profesionalRepo.findByIdWithDisponibilidades(id)
-				.orElseThrow(() -> new CustomException("Profesional inválido Id: " + id));
-
-		if (prof.getDisponibilidades() == null) {
-			prof.setDisponibilidades(new ArrayList<>());
-		}
-
-		prof.getSucursales().size();
-
-		model.addAttribute("profesionalForm", prof);
-
-		List<Profesional> lista = profesionalRepo.findAll();
-		model.addAttribute("profesionales", lista);
-
-		List<Especialidad> especialidades = especialidadRepo.findAll();
-		model.addAttribute("especialidadesList", especialidades);
-
-		List<Sucursal> sucursales = sucursalRepo.findAll();
-		model.addAttribute("sucursalesList", sucursales);
-
-		return "empleado/profesionales";
-	}
-
-	// Eliminar un profesional: GET /delete/{id}
-
-	@GetMapping("/delete/{id}")
-	public String eliminarProfesional(@PathVariable("id") Long id) {
-	    if (turnoRepo.existsByProfesional_IdUsuario(id)) throw new CustomException("El profesional posee Turnos asignados.");	// Verifico que no haya un turno relacionado a dicho profesional
-		profesionalRepo.deleteById(id);
-		return "redirect:/empleado/profesionales";
-	}
+    // Método utilitario para recargar vista en caso de error
+    private String recargarVista(Model model, Profesional profForm) {
+        model.addAttribute("profesionales", profesionalRepo.findAll());
+        model.addAttribute("especialidadesList", especialidadRepo.findAll());
+        model.addAttribute("sucursalesList", sucursalRepo.findAll());
+        model.addAttribute("profesionalForm", profForm);
+        return "empleado/profesionales";
+    }
 }

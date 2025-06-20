@@ -38,6 +38,30 @@ public class GlobalExceptionHandler{
         return "error/surgioError";
     }
     
+    @ExceptionHandler(ProfesionalInvalido.class)
+    public String manejarProfesionalInvalido(ProfesionalInvalido ex, Model model) {
+        model.addAttribute("mensaje", ex.getMessage());
+        return "error/surgioError";
+    }
+    
+    @ExceptionHandler(EmailExistente.class)
+    public String manejarEmailExistente(EmailExistente ex, Model model) {
+        model.addAttribute("mensaje", ex.getMessage());
+        return "error/surgioError";
+    }
+    
+    @ExceptionHandler(RolNoEncontrado.class)
+    public String manejarRolNoEncontrado(RolNoEncontrado ex, Model model) {
+        model.addAttribute("mensaje", ex.getMessage());
+        return "error/surgioError";
+    }
+    
+    @ExceptionHandler(TurnoYaAsignado.class)
+    public String manejarTurnoYaAsignado(TurnoYaAsignado ex, Model model) {
+        model.addAttribute("mensaje", ex.getMessage());
+        return "error/surgioError";
+    }
+    
 
     
 }
