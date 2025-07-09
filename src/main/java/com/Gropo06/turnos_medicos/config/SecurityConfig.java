@@ -8,6 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 
 import com.Gropo06.turnos_medicos.service.CustomUserDetailsService;
 
@@ -15,74 +17,65 @@ import com.Gropo06.turnos_medicos.service.CustomUserDetailsService;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final CustomUserDetailsService userDetailsService;
+	private final CustomUserDetailsService userDetailsService;
 
-    public SecurityConfig(CustomUserDetailsService uds) {
-        this.userDetailsService = uds;
-    }
+	public SecurityConfig(CustomUserDetailsService uds) {
+		this.userDetailsService = uds;
+	}
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.userDetailsService(userDetailsService)
-            .authorizeHttpRequests(auth -> auth
-                // Rutas estáticas y de login/registro
-            .requestMatchers("/css/**", "/images/**", "/login", "/register", "/error")
-                  .permitAll()
-                  .requestMatchers("/api/**").permitAll()  
-                // Solo ROLE_EMPLEADO podrá acceder a /empleado/**
-            .requestMatchers("/empleado/**")
-                  .hasRole("EMPLEADO")
-                // Solo ROLE_PACIENTE podrá acceder a las rutas de Turnos 
-            .requestMatchers("/turnos/**", "/mis-turnos")
-                  .hasRole("PACIENTE")
-            .requestMatchers("/paciente/**")
-                  .hasRole("PACIENTE")
-                // Requerimos autenticacion
-            .anyRequest()
-            .authenticated()
-            )
-            // Configuración de formulario de login
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .usernameParameter("email")
-                .successHandler(authenticationSuccessHandler())
-                .permitAll()
-            )
-            // Configuración de logout
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-            );
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http.userDetailsService(userDetailsService).authorizeHttpRequests(auth -> auth
+				// Recursos estaticos, login/registro/error
+				.requestMatchers("/css/**", "/images/**", "/login", "/register", "/error").permitAll()
+				// Endpoint abiertos de Swagger y login REST
+				.requestMatchers("/api/auth/login", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+				.requestMatchers("/api/**").permitAll()
+				// Solo ROL EMPLEADO podrá acceder a /empleado/
+				.requestMatchers("/empleado/**").hasRole("EMPLEADO")
+				// Solo ROL PACIENTE podrá acceder a las rutas de Turnos
+				.requestMatchers("/turnos/**", "/mis-turnos").hasRole("PACIENTE").requestMatchers("/paciente/**")
+				.hasRole("PACIENTE")
 
-        return http.build();
-    }
+				.anyRequest().authenticated())
 
-    @Bean
-    public AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return (request, response, authentication) -> {
-            boolean isEmpleado = authentication.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_EMPLEADO"));
-            if (isEmpleado) {
-                response.sendRedirect(request.getContextPath() + "/empleado/dashboard");
-                return;
-            }
+				.csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+				.formLogin(form -> form.loginPage("/login").loginProcessingUrl("/login").usernameParameter("email")
+						.successHandler(authenticationSuccessHandler()).permitAll())
+				.logout(logout -> logout.logoutUrl("/logout").logoutSuccessUrl("/login?logout"));
 
-            boolean isPaciente = authentication.getAuthorities().stream()
-                    .anyMatch(a -> a.getAuthority().equals("ROLE_PACIENTE"));
-            if (isPaciente) {
-                // La “home” de paciente es /home.
-                response.sendRedirect(request.getContextPath() + "/home");
-                return;
-            }
+		return http.build();
+	}
 
-            // Por defecto, redirige a /home si el usuario no es ni EMPLEADO ni PACIENTE
-            response.sendRedirect(request.getContextPath() + "/home");
-        };
-    }
+	@Bean
+	public AuthenticationSuccessHandler authenticationSuccessHandler() {
+		return (request, response, authentication) -> {
+			boolean isEmpleado = authentication.getAuthorities().stream()
+					.anyMatch(a -> a.getAuthority().equals("ROLE_EMPLEADO"));
+			if (isEmpleado) {
+				response.sendRedirect(request.getContextPath() + "/empleado/dashboard");
+				return;
+			}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+			boolean isPaciente = authentication.getAuthorities().stream()
+					.anyMatch(a -> a.getAuthority().equals("ROLE_PACIENTE"));
+			if (isPaciente) {
+				response.sendRedirect(request.getContextPath() + "/home");
+				return;
+			}
+
+			response.sendRedirect(request.getContextPath() + "/home");
+		};
+	}
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+			throws Exception {
+		return authenticationConfiguration.getAuthenticationManager();
+	}
 }

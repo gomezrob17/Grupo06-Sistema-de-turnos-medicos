@@ -23,12 +23,12 @@ public class ProfesionalService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
-	// Devuelve todos los profesionales como DTOs
+	// Devolvemos todos los profesionales como DTOs
 	public List<ProfesionalDTO> getAll() {
 		return repo.findAll().stream().map(MapperUtil::toDto).collect(Collectors.toList());
 	}
 
-	// Busca un profesional por su ID y devuelve su DTO (o null si no existe)
+	// Buscamos un profesional por su ID y devuelve su DTO (o null si no existe)
 
 	public ProfesionalDTO findById(Long id) {
 		return repo.findById(id).map(MapperUtil::toDto).orElse(null);
@@ -66,7 +66,7 @@ public class ProfesionalService {
 	    return MapperUtil.toDto(guardado);
 	}
 
-	// Elimina un profesional por su ID
+	// Eliminamos un profesional por su ID
 	public void deleteById(Long id) {
 		repo.deleteById(id);
 	}

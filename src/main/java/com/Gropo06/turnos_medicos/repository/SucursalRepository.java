@@ -9,10 +9,8 @@ import java.util.List;
 
 public interface SucursalRepository extends JpaRepository<Sucursal, Long> {
 
-    /**
-     * Busca todas las sucursales que tengan al menos un Profesional
-     * cuya especialidad tenga el ID dado.
-     */
+    //Busca todas las sucursales que tengan al menos un Profesional cuya especialidad tenga el ID dado.
+   
     @Query("""
         SELECT DISTINCT s
           FROM Sucursal s 

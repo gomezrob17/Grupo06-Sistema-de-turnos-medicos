@@ -18,7 +18,6 @@ public class SucursalService {
 	private SucursalRepository repo;
 
 	// Devolvemos todas las sucursales como DTOs
-
 	public List<SucursalDTO> getAll() {
 		return repo.findAll().stream().map(MapperUtil::toDto).collect(Collectors.toList());
 	}
@@ -28,8 +27,7 @@ public class SucursalService {
 		return repo.findById(id).map(MapperUtil::toDto).orElse(null);
 	}
 
-	// Guarda (crea o actualiza) una sucursal a partir de su DTO y devuelve el DTO
-	// resultante
+	// Guarda (crea o actualiza) una sucursal a partir de su DTO y devuelve el DTO resultante
 	public SucursalDTO save(SucursalDTO dto) {
 		Sucursal ent = MapperUtil.toEntity(dto);
 		Sucursal saved = repo.save(ent);

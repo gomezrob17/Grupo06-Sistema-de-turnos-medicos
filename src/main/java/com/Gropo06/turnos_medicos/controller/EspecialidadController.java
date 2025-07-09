@@ -36,7 +36,7 @@ public class EspecialidadController {
 		this.profesionalRepo = profesionalRepo;
 	}
 
-	// Lista todas los DTOs y prepara un DTO vacío para el formulario
+	// Listamos todos los DTOs y preparamos un DTO vacio para el formulario
 	@GetMapping
 	public String listarEspecialidades(Model model) {
 		List<EspecialidadDTO> lista = especialidadService.getAll();
@@ -58,7 +58,7 @@ public class EspecialidadController {
 		return "redirect:/empleado/especialidades";
 	}
 
-	// Carga un DTO en el form para editar
+	// Cargamos un DTO en el form para editar
 	@GetMapping("/edit/{id}")
 	public String editarEspecialidad(@PathVariable("id") Long id, Model model) {
 		EspecialidadDTO dto = especialidadService.buscarEspecialidadPorId(id);
@@ -70,7 +70,7 @@ public class EspecialidadController {
 		return "empleado/especialidades";
 	}
 
-	// Elimina la Especialidad (validando integridad)
+	// Eliminamos la Especialidad (validando integridad)
 	@GetMapping("/delete/{id}")
 	public String eliminarEspecialidad(@PathVariable("id") Long id) {
 		if (agendaRepo.existsByTipoEspecialidad_IdEspecialidad(id)) {

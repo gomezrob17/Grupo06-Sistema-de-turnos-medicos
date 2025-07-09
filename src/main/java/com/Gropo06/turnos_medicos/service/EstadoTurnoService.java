@@ -22,12 +22,12 @@ public class EstadoTurnoService {
 				.orElseThrow(() -> new RuntimeException("EstadoTurno no encontrado: " + nombre));
 	}
 
-	// Devuelve el Estado CANCELADO como DTO
+	// Devolvemos el Estado CANCELADO como DTO
 	public EstadoTurnoDTO obtenerEstadoCancelado() {
 		return obtenerPorNombre("CANCELADO");
 	}
 
-	// Lista todos los estados de turno como DTOs
+	// Listamos todos los estados de turno como DTO
 	public List<EstadoTurnoDTO> listarTodos() {
 		return estadoTurnoRepository.findAll().stream().map(MapperUtil::toDto).collect(Collectors.toList());
 	}

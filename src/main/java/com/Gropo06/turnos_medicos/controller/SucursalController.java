@@ -30,7 +30,7 @@ public class SucursalController {
 		return "empleado/sucursales";
 	}
 
-	// Guardamos o actualizamos una sucursal via DTO
+	// Guardamos/actualizamos una sucursal via DTO
 	@PostMapping("/save")
 	public String guardarSucursal(@ModelAttribute("sucursalDto") SucursalDTO dto) {
 	    if (sucursalService.existeNombreEnOtraSucursal(dto.getNombre(), dto.getIdSucursal())) {

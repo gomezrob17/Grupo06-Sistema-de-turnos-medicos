@@ -35,7 +35,7 @@ public class EspecialidadService {
     }
 
     
-     //Crea o actualiza una Especialidad a partir de un DTO y lo devuelve el DTO resultante con el id asignado     
+     //Crea/actualiza una Especialidad a partir de un DTO y lo devuelve el DTO resultante con el id asignado     
     public EspecialidadDTO save(EspecialidadDTO dto) {
         Especialidad entidad = MapperUtil.toEntity(dto);
         Especialidad guardada = repo.save(entidad);

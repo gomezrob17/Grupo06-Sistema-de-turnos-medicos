@@ -39,11 +39,11 @@ public class TurnoViewController {
 		// 1) Buscamos al paciente logueado como DTO
 		PacienteDTO paciente = pacienteService.findByEmail(principal.getName());
 
-		// 2) Datos del usuario para la cabecera
+		// 2) Datos del usuario
 		model.addAttribute("user", paciente);
 		model.addAttribute("displayName", paciente.getNombre() + " " + paciente.getApellido());
 
-		// 3) Listas para el formulario de reserva
+		// 3) Lista para el formulario de reserva
 		model.addAttribute("profesionales", profesionalService.getAll());
 		model.addAttribute("especialidades", especialidadService.getAll());
 		model.addAttribute("sucursales", sucursalService.getAll());

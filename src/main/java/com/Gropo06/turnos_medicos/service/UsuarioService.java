@@ -28,8 +28,7 @@ public class UsuarioService {
 		return usuarioRepo.findById(id).map(MapperUtil::toDto).orElse(null);
 	}
 
-	// Buscamos usuario por email de contacto, devolvemos DTO o arroja una excepción
-	// si no existe
+	// Buscamos usuario por email de contacto, devolvemos DTO o arrojamos una excepción si no existe
 	public UsuarioDTO findByEmail(String email) {
 		return usuarioRepo.findByContactoEmail(email).map(MapperUtil::toDto)
 				.orElseThrow(() -> new UsuarioInvalido("Usuario no encontrado: " + email));

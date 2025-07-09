@@ -21,19 +21,19 @@ public class ContactoService {
                 .orElseThrow(() -> new ContactoInvalido("Contacto no encontrado: " + id));
     }
 
-    // Crea o actualiza un contacto a partir de su DTO
+    // Crea/actualiza un contacto a partir de su DTO
     public ContactoDTO save(ContactoDTO dto) {
         Contacto ent = MapperUtil.toEntity(dto);
         Contacto saved = repo.save(ent);
         return MapperUtil.toDto(saved);
     }
 
-    // Valida si existe un email ya registrado
+    // Validamos si existe un email ya registrado
     public boolean existsByEmail(String email) {
         return repo.existsByEmail(email);
     }
 
-    // Obtenemos el idUsuario a partir del email (devuelve null si no existe)
+    // Obtenemos el idUsuario a partir del email (devolvemos null si no existe)
     public Long getIdUsuarioByEmail(String email) {
         return repo.findIdUsuarioByEmail(email);
     }

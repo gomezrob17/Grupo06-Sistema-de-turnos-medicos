@@ -54,7 +54,7 @@ public class PacienteController {
 			agrupado.computeIfAbsent(key, k -> new ArrayList<>()).add(d);
 		}
 
-		// 4) Generamos resultado para el front
+		// 4) Generamos resultado para la vista
 		List<ResultadoParaFront> resultado = new ArrayList<>();
 		for (List<Disponibilidad> dList : agrupado.values()) {
 			var primera = dList.get(0);
@@ -80,7 +80,7 @@ public class PacienteController {
 		return ResponseEntity.ok(resultado);
 	}
 
-	// DTO para enviar al front:
+	// DTO para enviar a la vista:
 	public static class ResultadoParaFront {
 		private ProfesionalDTO profesional;
 		private String dia;

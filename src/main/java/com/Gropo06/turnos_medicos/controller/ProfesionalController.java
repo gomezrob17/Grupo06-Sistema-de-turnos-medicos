@@ -39,7 +39,7 @@ public class ProfesionalController {
 		this.turnoService = turnoService;
 	}
 
-	// Mostramos la lista y form vacío (DTO)
+	// Mostramos la lista y form vacio (DTO)
 	@GetMapping
 	public String listarProfesionales(Model model) {
 		model.addAttribute("profesionales", profesionalService.getAll());
@@ -80,8 +80,6 @@ public class ProfesionalController {
 	    List<SucursalDTO> soloSeleccionadas = todas.stream()
 	        .filter(s -> idsSeleccionados.contains(s.getIdSucursal()))
 	        .toList();
-
-	    // Volvés a cargar el formulario con las sucursales seleccionadas para mostrar solo esas en los selects de disponibilidad
 	    model.addAttribute("profesionalDto", dto);
 	    model.addAttribute("sucursalesList", soloSeleccionadas);
 	    model.addAttribute("todasSucursales", todas);

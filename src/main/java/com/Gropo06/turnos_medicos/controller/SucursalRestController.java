@@ -22,14 +22,14 @@ public class SucursalRestController {
         this.sucursalService = sucursalService;
     }
 
-    // Obtener todas las sucursales
+    // Obtenemos todas las sucursales
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<SucursalDTO>> listarTodas() {
         List<SucursalDTO> lista = sucursalService.getAll();
         return ResponseEntity.ok(lista);
     }
 
-    // Obtener una sucursal por ID
+    // Obtenemos una sucursal por ID
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SucursalDTO> buscarPorId(@PathVariable Long id) {
         SucursalDTO dto = sucursalService.findById(id);
@@ -39,7 +39,7 @@ public class SucursalRestController {
         return ResponseEntity.ok(dto);
     }
 
-    // Crear una nueva sucursal
+    // Creamos una nueva sucursal
     @PreAuthorize("hasRole('ROLE_Admin') or hasRole('ROLE_Empleado')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SucursalDTO> crearSucursal(@Valid @RequestBody SucursalDTO dto) {
@@ -47,7 +47,7 @@ public class SucursalRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(creada);
     }
 
-    // Actualizar una sucursal existente
+    // Actualizamos una sucursal existente
     @PreAuthorize("hasRole('ROLE_Admin') or hasRole('ROLE_Empleado')")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SucursalDTO> actualizarSucursal(@PathVariable Long id, @Valid @RequestBody SucursalDTO dto) {
@@ -56,7 +56,7 @@ public class SucursalRestController {
         return ResponseEntity.ok(actualizada);
     }
 
-    // Eliminar una sucursal
+    // Eliminamos una sucursal
     @PreAuthorize("hasRole('ROLE_Admin') or hasRole('ROLE_Empleado')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarSucursal(@PathVariable Long id) {
