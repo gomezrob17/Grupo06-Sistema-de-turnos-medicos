@@ -52,7 +52,7 @@ public class DisponibilidadService {
 	public List<DisponibilidadDTO> findByFilter(Long idEspecialidad, Long idSucursal, LocalDate desde,
 			LocalDate hasta) {
 
-		// 1) Obtener DTOs y convertir a entidades
+		// 1) Obtenemos DTOs y convertimos a entidades
 		EspecialidadDTO espDto = especialidadService.buscarEspecialidadPorId(idEspecialidad);
 		SucursalDTO sucDto = sucursalService.findById(idSucursal);
 		var espEnt = MapperUtil.toEntity(espDto);
