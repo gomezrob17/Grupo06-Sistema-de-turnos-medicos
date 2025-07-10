@@ -14,6 +14,7 @@ import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -36,10 +37,14 @@ public class SucursalRestController {
     @PreAuthorize("hasRole('ROLE_Admin') or hasRole('ROLE_Empleado')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SucursalDTO> crearSucursal(@Valid @RequestBody SucursalDTO request) {
+        // Solución para que especialidadIds pueda venir vacío
+        if (request.getEspecialidadIds() == null) {
+            request.setEspecialidadIds(new HashSet<>());
+        }
+
         SucursalDTO nueva = sucursalService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(nueva);
     }
-
     @Operation(
         summary = "Ver una sucursal por ID (Empleado/Admin)",
         description = "Muestra el detalle de una sucursal por ID. Requiere rol de Empleado o Admin.",

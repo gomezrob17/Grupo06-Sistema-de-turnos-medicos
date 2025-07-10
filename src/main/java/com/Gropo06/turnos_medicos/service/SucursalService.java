@@ -11,11 +11,14 @@ import com.Gropo06.turnos_medicos.mapper.MapperUtil;
 import com.Gropo06.turnos_medicos.model.Sucursal;
 import com.Gropo06.turnos_medicos.repository.SucursalRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class SucursalService {
 
 	@Autowired
 	private SucursalRepository repo;
+	
 
 	// Devolvemos todas las sucursales como DTOs
 	public List<SucursalDTO> getAll() {
@@ -55,6 +58,24 @@ public class SucursalService {
 		return repo.findAllById(ids).stream().map(MapperUtil::toDto).collect(Collectors.toList());
 	}
 	
+	public SucursalDTO obtenerSucursalPorId(Long id) throws Exception {
+	    Sucursal sucursal =repo.findById(id)
+	                            .orElseThrow(() -> new Exception("Sucursal no encontrada"));
+	    return MapperUtil.toDto(sucursal);
+	}
+	public SucursalDTO findByIdWithRelations(Long id) {
+        return repo.findById(id)
+            .map(MapperUtil::toDto) // Asegúrate que MapperUtil.toDto incluya las relaciones
+            .orElse(null);
+    }
+	
+	public List<SucursalDTO> getAllWithRelations() {
+        return repo.findAll().stream()
+            .map(MapperUtil::toDto)
+            .collect(Collectors.toList());
+    }
+
+	
 	public boolean existeNombreEnOtraSucursal(String nombre, Long idSucursalActual) {
 		Sucursal encontrada = repo.findByNombre(nombre);
 		if (encontrada == null)
@@ -63,4 +84,14 @@ public class SucursalService {
 			return false;
 		return true;
 	}
+	
+	@Transactional
+	public Sucursal obtenerSucursalEntidadPorId(Long id) {
+	    return repo.findById(id).orElse(null);
+	}
+	
+	@Transactional
+    public Sucursal guardarSucursalEntidad(Sucursal sucursal) {
+        return repo.save(sucursal);
+    }
 }

@@ -541,15 +541,17 @@ public class MapperUtil {
 		s.setNombre(dto.getNombre());
 		s.setDireccion(dto.getDireccion());
 		if (dto.getEspecialidadIds() != null) {
-			Set<Especialidad> especialidades = dto.getEspecialidadIds().stream().map(id -> {
-				Especialidad esp = new Especialidad();
-				esp.setIdEspecialidad(id);
-				return esp;
-			}).collect(Collectors.toSet());
-			s.setEspecialidades(especialidades);
-		} else {
-			s.setEspecialidades(new HashSet<>());
-		}
+	        Set<Especialidad> especialidades = dto.getEspecialidadIds().stream()
+	            .filter(id -> id != null && id > 0) // <-- FILTRAR IDs NO VALIDOS
+	            .map(id -> {
+	                Especialidad esp = new Especialidad();
+	                esp.setIdEspecialidad(id);
+	                return esp;
+	            }).collect(Collectors.toSet());
+	        s.setEspecialidades(especialidades);
+	    } else {
+	        s.setEspecialidades(new HashSet<>());
+	    }
 		return s;
 	}
 
