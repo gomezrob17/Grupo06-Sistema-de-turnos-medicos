@@ -87,7 +87,7 @@ public class GlobalExceptionHandler{
     }
     
     @ExceptionHandler(MatriculaExistente.class)
-    public String manejarDniExistente(MatriculaExistente ex, Model model) {
+    public String manejarMatriculaExistente(MatriculaExistente ex, Model model) {
         model.addAttribute("mensaje", ex.getMessage());
         return "error/surgioError";
     }
