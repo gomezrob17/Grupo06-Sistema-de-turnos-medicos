@@ -23,4 +23,8 @@ public interface SucursalRepository extends JpaRepository<Sucursal, Long> {
 	boolean existsByNombre(String nombre);
 	
 	Sucursal findByNombre(String nombre);
+	
+	boolean existsByDireccion(String direccion);
+	
+	Sucursal findByDireccion(String direccion);
 }

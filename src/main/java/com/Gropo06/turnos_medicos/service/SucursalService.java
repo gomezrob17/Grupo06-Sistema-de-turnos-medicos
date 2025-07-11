@@ -85,6 +85,15 @@ public class SucursalService {
 		return true;
 	}
 	
+	public boolean existeDireccionEnOtraSucursal(String direccion, Long idSucursalActual) {
+		Sucursal encontrada = repo.findByDireccion(direccion);
+		if (encontrada == null)
+			return false;
+		if (idSucursalActual != null && encontrada.getIdSucursal().equals(idSucursalActual))
+			return false;
+		return true;
+	}
+	
 	@Transactional
 	public Sucursal obtenerSucursalEntidadPorId(Long id) {
 	    return repo.findById(id).orElse(null);

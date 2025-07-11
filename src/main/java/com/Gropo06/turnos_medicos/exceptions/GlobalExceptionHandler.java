@@ -92,6 +92,11 @@ public class GlobalExceptionHandler{
         return "error/surgioError";
     }
     
+    @ExceptionHandler(DireccionDuplicada.class)
+    public String manejarDireccionExistente(DireccionDuplicada ex, Model model) {
+        model.addAttribute("mensaje", ex.getMessage());
+        return "error/surgioError";
+    }
 
     
 }

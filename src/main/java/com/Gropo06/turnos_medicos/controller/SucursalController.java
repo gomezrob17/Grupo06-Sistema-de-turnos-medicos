@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.Gropo06.turnos_medicos.dto.SucursalDTO;
+import com.Gropo06.turnos_medicos.exceptions.DireccionDuplicada;
 import com.Gropo06.turnos_medicos.exceptions.NombreDuplicado;
 import com.Gropo06.turnos_medicos.exceptions.SucursalInvalida;
 import com.Gropo06.turnos_medicos.service.SucursalService;
@@ -35,6 +36,9 @@ public class SucursalController {
 	public String guardarSucursal(@ModelAttribute("sucursalDto") SucursalDTO dto) {
 	    if (sucursalService.existeNombreEnOtraSucursal(dto.getNombre(), dto.getIdSucursal())) {
 	        throw new NombreDuplicado("Nombre Duplicado");
+	    }
+	    if (sucursalService.existeDireccionEnOtraSucursal(dto.getDireccion(), dto.getIdSucursal())) {
+	        throw new DireccionDuplicada("Direccion Duplicada");
 	    }
 	    sucursalService.save(dto);
 	    return "redirect:/empleado/sucursales";
