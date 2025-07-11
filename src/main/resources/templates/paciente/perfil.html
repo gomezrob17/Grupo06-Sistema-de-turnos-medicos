@@ -76,11 +76,12 @@
       </div>
 
       <!-- Datos de contacto -->
-      <div class="card collapsible">
+      <div class="card">
         <h2>Datos de contacto</h2>
         <div class="content">
           <p><strong>Email:</strong> <span th:text="${pacienteDTO.contactoEmail}">correo@ejemplo.com</span></p>
           <p><strong>Teléfono:</strong> <span th:text="${pacienteDTO.contactoTelefono}">011-1234-5678</span></p>
+		  <p><strong>Obra Social:</strong> <span th:text="${pacienteDTO.obraSocial != null ? pacienteDTO.obraSocial : 'Sin Obra Social'}">Obra Social</span></p>
         </div>
       </div>
 

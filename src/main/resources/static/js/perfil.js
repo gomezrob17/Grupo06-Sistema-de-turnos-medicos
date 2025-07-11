@@ -1,9 +1,3 @@
-// Colapsar secciones
-document.querySelectorAll(".collapsible").forEach(section => {
-  section.querySelector("h2").addEventListener("click", () => {
-    section.classList.toggle("open");
-  });
-});
 
 // Dropdown del usuario
 document.querySelector(".btn-user").addEventListener("click", e => {

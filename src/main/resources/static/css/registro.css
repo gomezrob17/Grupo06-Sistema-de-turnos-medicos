@@ -66,9 +66,10 @@ body {
 }
 
 .row {
-	display: flex;
-	gap: 10px;
-	margin-bottom: 15px;
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 2%;
+	margin-bottom: 1rem;
 }
 
 .row input,
@@ -117,16 +118,6 @@ body {
 .required {
 	color: red;
 	margin-left: 0.25rem;
-}
-
-.row {
-	display: flex;
-	gap: 2%;
-	margin-bottom: 1rem;
-}
-
-.row .form-group {
-	width: 49%;
 }
 
 .required-note {

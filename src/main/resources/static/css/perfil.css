@@ -129,14 +129,6 @@ body {
   cursor: pointer;
 }
 
-.collapsible .content {
-  display: none;
-}
-
-.collapsible.open .content {
-  display: block;
-}
-
 .turnos-section h1 {
   margin-top: 0;
   color: #00838f;
