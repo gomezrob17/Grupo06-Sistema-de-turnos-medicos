@@ -19,4 +19,9 @@ public interface ProfesionalRepository extends JpaRepository<Profesional, Long> 
     Optional<Profesional> findByIdWithDisponibilidades(@Param("id") Long id);
 
 	boolean existsByEspecialidad_IdEspecialidad(Long id);
+	
+    boolean existsByMatricula(String matricula);
+
+    @Query("SELECT p.idUsuario FROM Profesional p WHERE p.matricula = :matricula")
+    Long getIdUsuarioByMatricula(@Param("matricula") String matricula);
 }

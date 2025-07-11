@@ -2,10 +2,7 @@ package com.Gropo06.turnos_medicos.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
 import com.Gropo06.turnos_medicos.dto.*;
 import com.Gropo06.turnos_medicos.exceptions.*;
 import com.Gropo06.turnos_medicos.service.*;
@@ -56,7 +53,8 @@ public class ProfesionalController {
 	    @ModelAttribute("profesionalDto") ProfesionalDTO dto,
 	    Model model) {
 	    if (dto.getFechaNacimiento() == null || dto.getFechaNacimiento().isAfter(LocalDate.now())
-	            || dto.getFechaNacimiento().isAfter(LocalDate.now().minusYears(18))) {
+	            || dto.getFechaNacimiento().isAfter(LocalDate.now().minusYears(18)) 
+	            || dto.getFechaNacimiento().isBefore(LocalDate.now().minusYears(80))) {
 	        model.addAttribute("errorFecha", "Fecha de nacimiento inválida");
 	        return recargarVista(model, dto);
 	    }
@@ -71,6 +69,13 @@ public class ProfesionalController {
 	        Long idUsuarioExistente = contactoService.getIdUsuarioByEmail(dto.getContactoEmail());
 	        if (!esEdicion || (idUsuarioExistente != null && !idUsuarioExistente.equals(dto.getIdUsuario()))) {
 	            throw new EmailExistente("Email ya registrado");
+	        }
+	    }
+	    
+	    if (profesionalService.existsByMatricula(dto.getMatricula())) {
+	        Long idUsuarioMatricula = profesionalService.getIdUsuarioByMatricula(dto.getMatricula());
+	        if (!esEdicion || (idUsuarioMatricula != null && !idUsuarioMatricula.equals(dto.getIdUsuario()))) {
+	            throw new MatriculaExistente("Matrícula ya registrada");
 	        }
 	    }
 	    

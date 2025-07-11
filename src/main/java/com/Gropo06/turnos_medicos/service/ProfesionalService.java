@@ -93,4 +93,13 @@ public class ProfesionalService {
 	public void deleteById(Long id) {
 		repo.deleteById(id);
 	}
+	
+
+    public boolean existsByMatricula(String matricula) {
+        return repo.existsByMatricula(matricula);
+    }
+
+    public Long getIdUsuarioByMatricula(String matricula) {
+        return repo.getIdUsuarioByMatricula(matricula);
+    }
 }
