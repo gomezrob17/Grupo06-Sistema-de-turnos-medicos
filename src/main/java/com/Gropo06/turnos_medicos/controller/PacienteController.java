@@ -1,12 +1,15 @@
 package com.Gropo06.turnos_medicos.controller;
 
 import com.Gropo06.turnos_medicos.dto.EspecialidadDTO;
+import com.Gropo06.turnos_medicos.dto.ProfesionalDTO;
 import com.Gropo06.turnos_medicos.dto.SucursalDTO;
 import com.Gropo06.turnos_medicos.mapper.MapperUtil;
 import com.Gropo06.turnos_medicos.model.Disponibilidad;
 import com.Gropo06.turnos_medicos.repository.DisponibilidadRepository;
 import com.Gropo06.turnos_medicos.service.EspecialidadService;
 import com.Gropo06.turnos_medicos.service.SucursalService;
+
+import io.swagger.v3.oas.annotations.Hidden;
 
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +34,7 @@ public class PacienteController {
 		this.sucursalService = sucursalService;
 	}
 
+	@Hidden
 	@GetMapping("/buscar")
 	public ResponseEntity<List<ResultadoParaFront>> buscarTurnosDisponibles(@RequestParam("idEspecialidad") Long idEsp,
 			@RequestParam("idSucursal") Long idSuc,
@@ -102,30 +106,6 @@ public class PacienteController {
 
 		public List<String> getFranjas() {
 			return franjas;
-		}
-	}
-
-	public static class ProfesionalDTO {
-		private Long idUsuario;
-		private String nombre;
-		private String apellido;
-
-		public ProfesionalDTO(Long idUsuario, String nombre, String apellido) {
-			this.idUsuario = idUsuario;
-			this.nombre = nombre;
-			this.apellido = apellido;
-		}
-
-		public Long getIdUsuario() {
-			return idUsuario;
-		}
-
-		public String getNombre() {
-			return nombre;
-		}
-
-		public String getApellido() {
-			return apellido;
 		}
 	}
 }

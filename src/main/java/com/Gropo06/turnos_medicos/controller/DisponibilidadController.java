@@ -6,6 +6,8 @@ import java.util.List;
 import com.Gropo06.turnos_medicos.dto.DisponibilidadDTO;
 import com.Gropo06.turnos_medicos.service.DisponibilidadService;
 
+import io.swagger.v3.oas.annotations.Hidden;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -49,6 +51,7 @@ public class DisponibilidadController {
 		return "redirect:/empleado/disponibilidades";
 	}
 
+	@Hidden
 	@GetMapping("/api/filtrar")
 	@ResponseBody
 	public ResponseEntity<List<DisponibilidadDTO>> filtrar(@RequestParam("idEspecialidad") Long idEspecialidad,

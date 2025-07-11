@@ -25,7 +25,13 @@ public class ProfesionalDTO {
     private List<Long> sucursalIds = new ArrayList<>();
     private List<SucursalDTO> sucursales;
     
-    public Long getIdUsuario() {
+	public ProfesionalDTO() {
+	}
+	
+    public ProfesionalDTO(Long idUsuario2, String nombre2, String apellido2) {
+	}
+
+	public Long getIdUsuario() {
         return idUsuario;
     }
     public void setIdUsuario(Long idUsuario) {

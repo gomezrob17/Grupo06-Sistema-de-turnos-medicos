@@ -12,6 +12,9 @@ import com.Gropo06.turnos_medicos.repository.DisponibilidadRepository;
 import com.Gropo06.turnos_medicos.repository.EstadoTurnoRepository;
 import com.Gropo06.turnos_medicos.repository.ProfesionalRepository;
 import com.Gropo06.turnos_medicos.service.*;
+
+import io.swagger.v3.oas.annotations.Hidden;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -54,6 +57,7 @@ public class TurnoController {
 		this.emailService = emailService;
 	}
 
+	@Hidden
 	@GetMapping("/api/turnos/slots")
 	@ResponseBody
 	public ResponseEntity<List<SlotDTO>> getSlotsPorFiltro(@RequestParam Long idEspecialidad,
