@@ -47,8 +47,9 @@ public class DisponibilidadController {
 
 	@GetMapping("/delete/{id}")
 	public String delete(@PathVariable Long id) {
+		Long profesionalId = service.findById(id).getProfesionalId();
 		service.deleteById(id);
-		return "redirect:/empleado/disponibilidades";
+		return "redirect:/empleado/profesionales/edit/" + profesionalId;
 	}
 
 	@Hidden

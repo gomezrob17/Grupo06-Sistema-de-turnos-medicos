@@ -2,9 +2,13 @@ package com.Gropo06.turnos_medicos.controller;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import com.Gropo06.turnos_medicos.dto.*;
 import com.Gropo06.turnos_medicos.exceptions.*;
+import com.Gropo06.turnos_medicos.model.enums.DiaSemana;
 import com.Gropo06.turnos_medicos.service.*;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -92,7 +96,14 @@ public class ProfesionalController {
 	    dto.setRolId(rolService.findByName("PROFESIONAL").getIdRol());
 	    
 	    System.out.println("DISPONIBILIDADES:");
+	    Set<DiaSemana> diasUnicos = new HashSet<>();
 	    for (DisponibilidadDTO d : dto.getDisponibilidades()) {
+	    	if (!d.getHoraInicio().isBefore(d.getHoraFin())) {
+	    		throw new DisponibilidadInvalida("La hora de inicio debe ser menor que la hora de fin");
+	        }
+	        if (!diasUnicos.add(d.getDiaSemana())) {
+	            throw new DisponibilidadInvalida("No se puede repetir el día " + d.getDiaSemana() + " en las disponibilidades.");
+	        }
 	        System.out.println("  Día: " + d.getDiaSemana());
 	        System.out.println("  Fecha: " + d.getFecha());
 	        System.out.println("  Sucursal ID: " + d.getSucursalId());

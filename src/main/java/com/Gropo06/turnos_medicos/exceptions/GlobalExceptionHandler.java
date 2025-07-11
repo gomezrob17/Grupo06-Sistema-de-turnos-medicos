@@ -98,5 +98,10 @@ public class GlobalExceptionHandler{
         return "error/surgioError";
     }
 
+    @ExceptionHandler(DisponibilidadInvalida.class)
+    public String manejarDisponibilidadInvalida(DisponibilidadInvalida ex, Model model) {
+        model.addAttribute("mensaje", ex.getMessage());
+        return "error/surgioError";
+    }
     
 }

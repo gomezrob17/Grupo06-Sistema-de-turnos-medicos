@@ -81,9 +81,19 @@ document.addEventListener('DOMContentLoaded', () => {
 				if (e.target.matches('.btn-remove-disp')) {
 					const row = e.target.closest('tr');
 					if (row) {
-						row.remove();
-						reindexDisp();
+						const idInput = row.querySelector('input[type="hidden"]');
+						const id = idInput?.value;
+
+						if (id) {
+							if (confirm('¿Estás seguro de eliminar esta disponibilidad?')) {
+								window.location.href = `/empleado/disponibilidades/delete/${id}`;
+							}
+						} else {
+							row.remove();
+							reindexDisp();
+						}
 					}
 				}
 			});
+			
 		});
